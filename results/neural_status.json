@@ -1,0 +1,27 @@
+{
+  "completed": true,
+  "seconds": 169.2593114376068,
+  "models": [
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+      "torch": "2.7.0+cpu",
+      "transformer_weights_updated": false,
+      "prompt_count": 152,
+      "candidate_set_size": 10,
+      "seconds": 33.93831920623779,
+      "mean_unrestricted_mass_on_option_letters": 0.7744290828704834
+    },
+    {
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "torch": "2.7.0+cpu",
+      "transformer_weights_updated": false,
+      "prompt_count": 152,
+      "candidate_set_size": 10,
+      "seconds": 85.11642813682556,
+      "mean_unrestricted_mass_on_option_letters": 0.9158987998962402
+    }
+  ],
+  "scope": "Frozen transformer inference plus trained candidate decision-head DPO; not full transformer fine-tuning"
+}

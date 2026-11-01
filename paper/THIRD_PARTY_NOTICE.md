@@ -1,0 +1,1 @@
+The bundled TMLR style files are unmodified upstream files from https://github.com/JmlrOrg/tmlr-style-file. Their Apache-2.0 license is in STYLE_LICENSE. They are not covered by the original-code MIT license.

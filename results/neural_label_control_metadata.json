@@ -1,0 +1,22 @@
+[
+  {
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "torch": "2.7.0+cpu",
+    "transformer_weights_updated": false,
+    "prompt_count": 48,
+    "candidate_set_size": 10,
+    "seconds": 11.584900617599487,
+    "mean_unrestricted_mass_on_option_letters": 0.7894994616508484
+  },
+  {
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "torch": "2.7.0+cpu",
+    "transformer_weights_updated": false,
+    "prompt_count": 48,
+    "candidate_set_size": 10,
+    "seconds": 27.82610297203064,
+    "mean_unrestricted_mass_on_option_letters": 0.9161088466644287
+  }
+]

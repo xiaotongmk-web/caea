@@ -1,0 +1,111 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Atwell et~al.(2026)Atwell, Heydari, Sicilia, and Alikhani]{atwell2026}
+Katherine Atwell, Pedram Heydari, Anthony Sicilia, and Malihe Alikhani.
+\newblock {BASIL}: Bayesian assessment of sycophancy in {LLMs}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2508.16846v6}.
+\newblock arXiv:2508.16846, version 6.
+
+\bibitem[Csisz{\'a}r(1975)]{csiszar1975}
+Imre Csisz{\'a}r.
+\newblock {I}-divergence geometry of probability distributions and minimization
+  problems.
+\newblock \emph{The Annals of Probability}, 3\penalty0 (1):\penalty0 146--158,
+  1975.
+\newblock \doi{10.1214/aop/1176996454}.
+
+\bibitem[Ghosh et~al.(2026)Ghosh, Bhattacharya, and Chakrabarti]{ghosh2026}
+Sayantari Ghosh, Saumik Bhattacharya, and Partha~Pratim Chakrabarti.
+\newblock Escape from delusional echo trap: Symmetry breaking, stochastic
+  dynamics and mathematical mitigation strategies for algorithmic sycophancy,
+  2026.
+\newblock URL \url{https://arxiv.org/abs/2606.20718}.
+\newblock arXiv:2606.20718.
+
+\bibitem[Gneiting \& Raftery(2007)Gneiting and Raftery]{gneiting2007}
+Tilmann Gneiting and Adrian~E. Raftery.
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock \emph{Journal of the American Statistical Association}, 102\penalty0
+  (477):\penalty0 359--378, 2007.
+\newblock \doi{10.1198/016214506000001437}.
+
+\bibitem[Hatgis-Kessell et~al.(2026)Hatgis-Kessell, Cheng, Hou, Hu, Gupta,
+  Jaques, and Brunskill]{hatgis2026}
+Stephane Hatgis-Kessell, Myra Cheng, Xiaoxuan Hou, Qian Hu, Rahul Gupta,
+  Natasha Jaques, and Emma Brunskill.
+\newblock Mitigating social sycophancy via pluralistic preference optimization,
+  2026.
+\newblock URL \url{https://arxiv.org/abs/2610.02568v2}.
+\newblock arXiv:2610.02568, version 2.
+
+\bibitem[{Hugging Face}(2024)]{smollm2}
+{Hugging Face}.
+\newblock {SmolLM2-135M-Instruct}: Model card, 2024.
+\newblock URL \url{https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct}.
+\newblock Model revision recorded in the accompanying results.
+
+\bibitem[Lanchantin et~al.(2025)Lanchantin, Chen, Dhuliawala, Yu, Weston,
+  Sukhbaatar, and Kulikov]{lanchantin2025}
+Jack Lanchantin, Angelica Chen, Shehzaad Dhuliawala, Ping Yu, Jason Weston,
+  Sainbayar Sukhbaatar, and Ilia Kulikov.
+\newblock Diverse preference optimization, 2025.
+\newblock URL \url{https://arxiv.org/abs/2501.18101}.
+\newblock arXiv:2501.18101.
+
+\bibitem[Ma et~al.(2026)Ma, Zou, Li, Ma, Su, and Yu]{ma2026}
+Huanhuan Ma, Henry~Peng Zou, Chengze Li, Enze Ma, Yunyue Su, and Philip~S. Yu.
+\newblock Sycophancy suppression can impair rational updating: Anti-sycophancy
+  should preserve the ability to update, 2026.
+\newblock URL \url{https://arxiv.org/abs/2608.26511}.
+\newblock arXiv:2608.26511; accepted to Findings of EMNLP 2026.
+
+\bibitem[Moya et~al.(2026)Moya, Semendinger, Lin, and Thornley]{moya2026}
+Christian Moya, Alex Semendinger, Guang Lin, and Elliott Thornley.
+\newblock Spurious correlation learning in preference optimization: Mechanisms,
+  consequences, and mitigation via tie training.
+\newblock In \emph{Proceedings of the 43rd International Conference on Machine
+  Learning}, volume 306 of \emph{Proceedings of Machine Learning Research},
+  pp.\  90714--90761, 2026.
+\newblock URL \url{https://proceedings.mlr.press/v306/moya26a.html}.
+
+\bibitem[{Qwen Team}(2024)]{qwen25}
+{Qwen Team}.
+\newblock {Qwen2.5-0.5B-Instruct}: Model card, 2024.
+\newblock URL \url{https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct}.
+\newblock Model revision recorded in the accompanying results.
+
+\bibitem[Rafailov et~al.(2023)Rafailov, Sharma, Mitchell, Ermon, Manning, and
+  Finn]{rafailov2023}
+Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher~D.
+  Manning, and Chelsea Finn.
+\newblock Direct preference optimization: Your language model is secretly a
+  reward model.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023.
+\newblock URL \url{https://arxiv.org/abs/2305.18290}.
+
+\bibitem[Shapira et~al.(2026)Shapira, Benade, and Procaccia]{shapira2026}
+Itai Shapira, Gerdus Benade, and Ariel~D. Procaccia.
+\newblock How {RLHF} amplifies sycophancy.
+\newblock In \emph{Proceedings of the 43rd International Conference on Machine
+  Learning}, volume 306 of \emph{Proceedings of Machine Learning Research},
+  pp.\  110417--110441, 2026.
+\newblock URL \url{https://proceedings.mlr.press/v306/shapira26a.html}.
+
+\bibitem[Sharma et~al.(2024)Sharma, Tong, Korbak, Duvenaud, Askell, Bowman,
+  Cheng, Durmus, Hatfield-Dodds, Johnston, Kravec, Maxwell, McCandlish,
+  Ndousse, Rausch, Schiefer, Yan, Zhang, and Perez]{sharma2024}
+Mrinank Sharma, Meg Tong, Tomasz Korbak, David Duvenaud, Amanda Askell,
+  Samuel~R. Bowman, Newton Cheng, Esin Durmus, Zac Hatfield-Dodds, Scott~R.
+  Johnston, Shauna Kravec, Timothy Maxwell, Sam McCandlish, Kamal Ndousse,
+  Oliver Rausch, Nicholas Schiefer, Da~Yan, Miranda Zhang, and Ethan Perez.
+\newblock Towards understanding sycophancy in language models.
+\newblock In \emph{International Conference on Learning Representations}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2310.13548}.
+
+\end{thebibliography}

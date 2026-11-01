@@ -1,0 +1,17 @@
+{
+  "seeds": 10,
+  "ntrain": 24000,
+  "ntest": 600,
+  "holdout_pairs": 4000,
+  "beta": 0.5,
+  "k": 4.0,
+  "q_classes": 21,
+  "styles": 3,
+  "target_temp": 0.01,
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "experiment_type": "finite-action log-linear preference learning and synthetic interaction",
+  "language_model_training": false,
+  "human_subjects": false
+}

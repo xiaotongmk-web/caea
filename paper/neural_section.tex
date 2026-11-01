@@ -1,0 +1,53 @@
+We evaluate a constrained candidate-selection interface on
+SmolLM2-135M-Instruct and Qwen2.5-0.5B-Instruct \citep{smollm2,qwen25}.
+Each prompt specifies a prior and signal likelihoods, allowing an analytic
+Bayesian posterior. The evidence contexts are disjoint across training
+(40), validation (12), and test (24) splits. Two unsupported user stances
+per context yield 152 prompts per backbone, including 48 test prompts.
+Ten one-token options encode five forecast values and two abstract styles.
+Scores are normalized over these option letters; their mean unrestricted
+next-token probability mass on the test split is 0.77433 for SmolLM2 and
+0.91253 for Qwen.
+
+All Transformer and original output-head weights remain frozen. A linear
+ten-option decision-head adapter uses an intercept and 16 principal
+components of final hidden states, fitted on training prompts only. We
+optimize the DPO pairwise likelihood with 16 Bradley--Terry pairs per
+training prompt and five label-sampling seeds. The regularization strength
+is selected from $\{0.001,0.01,0.1\}$ using validation pair NLL. The reward
+combines forecast error, agreement pressure $k=4$, and a 0.5 reward for the
+requested abstract style. The evidence target uses $T_E=0.03$.
+
+\begin{table}[t]
+\centering\small
+\caption{Frozen-backbone candidate selection: means $\pm$ 95\% Student-$t$
+confidence half-widths over five label-sampling seeds. The prompt split is
+shared across seeds, so intervals exclude prompt-population uncertainty.
+Style match is probability mass on options with the requested style label.}
+\label{tab:neural}
+\resizebox{\linewidth}{!}{\input{table_neural.tex}}
+\end{table}
+
+\paragraph{Conditional and unconditional retention.}
+Table~\ref{tab:neural} shows that head-DPO lowers report regret relative
+to both frozen bases. Full repair and Audit-only again have the same
+regret, 0.01448, because they use the same class marginal. Full repair's
+unconditional style-match rate is lower than head-DPO's, despite exact
+preservation within each forecast class: changing the class mixture also
+changes the aggregate style mixture. Conditional preservation therefore
+does not guarantee unchanged overall style performance.
+
+\paragraph{Answer-order sensitivity.}
+An additional held-out control permutes the option-to-letter mapping
+without retraining or model selection. On these prompts, report regret
+is 0.20364 for the SmolLM2 base and 0.22048 for head-DPO; the corresponding
+Qwen values are 0.21639 and 0.22107. Thus the initial head-DPO improvements
+do not survive this control. Full-repair style-match rates fall to 0.45308
+and 0.49155, below Audit-only's 0.5. The retained within-class policy can
+itself encode position shortcuts. This pilot establishes execution on
+frozen neural scores, while its transfer failures limit interpretation
+of the learned selector.
+With a correct, permutation-consistent class map and sufficient candidate
+support, full repair enforces the specified class marginal even when the
+input scores change. It does not remove position shortcuts within a class,
+validate the class map, or guarantee unchanged aggregate style performance.

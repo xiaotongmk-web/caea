@@ -1,0 +1,23 @@
+{
+  "completed": true,
+  "seconds": 25.581759929656982,
+  "verification": {
+    "projection_max_objective_gap": 2.589040093425865e-13,
+    "independent_solves": 20,
+    "gaussian_counterexample": {
+      "s": 1.0,
+      "reference_mean": 0.0,
+      "reference_variance": 1.0,
+      "k": 1.0,
+      "beta": 2.0,
+      "optimal_mean": 0.5,
+      "optimal_variance": 0.5,
+      "evidence_target_mean": 0.5,
+      "evidence_target_variance": 0.5,
+      "KL": 0.0
+    },
+    "original_BPD_moderation_example": 0.7500000000000001,
+    "exact_full_repair_contraction_per_round": 0.75,
+    "unchanged_assistant_parameters_during_feedback": true
+  }
+}

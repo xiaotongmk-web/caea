@@ -1,0 +1,122 @@
+[
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "method": "LM-base",
+    "risk": 0.18019080293372527,
+    "risk_ci95": 0.0,
+    "style_match": 0.5016905665397644,
+    "style_match_ci95": 0.0,
+    "target_TV": 0.5907570178912182,
+    "target_TV_ci95": 0.0,
+    "KL_to_head_DPO": 1.357333900392225,
+    "KL_to_head_DPO_ci95": 0.6896119028370129
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "method": "Head-DPO",
+    "risk": 0.16383092182234818,
+    "risk_ci95": 0.019626511543363784,
+    "style_match": 0.6706379903159194,
+    "style_match_ci95": 0.0679379465622418,
+    "target_TV": 0.6296023565289782,
+    "target_TV_ci95": 0.028265478457507754,
+    "KL_to_head_DPO": 0.0,
+    "KL_to_head_DPO_ci95": 0.0
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "method": "Audit-only",
+    "risk": 0.014480191734822187,
+    "risk_ci95": 0.0,
+    "style_match": 0.5,
+    "style_match_ci95": 0.0,
+    "target_TV": 0.0,
+    "target_TV_ci95": 0.0,
+    "KL_to_head_DPO": 2.305851334577354,
+    "KL_to_head_DPO_ci95": 0.6172730040261055
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "method": "CAEA-0.5",
+    "risk": 0.08915555677858518,
+    "risk_ci95": 0.00981325577168189,
+    "style_match": 0.6556320312258099,
+    "style_match_ci95": 0.05656486246205004,
+    "target_TV": 0.3148011782644891,
+    "target_TV_ci95": 0.01413273922875384,
+    "KL_to_head_DPO": 0.663593499527269,
+    "KL_to_head_DPO_ci95": 0.22269218583196207
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "method": "CAEA-1",
+    "risk": 0.014480191734822187,
+    "risk_ci95": 0.0,
+    "style_match": 0.6406260721357007,
+    "style_match_ci95": 0.05032343690797064,
+    "target_TV": 2.4905653585243415e-17,
+    "target_TV_ci95": 5.9900235070787114e-18,
+    "KL_to_head_DPO": 1.9783794318790988,
+    "KL_to_head_DPO_ci95": 0.49954324372625664
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "method": "LM-base",
+    "risk": 0.2389182413148335,
+    "risk_ci95": 3.8530916029980064e-17,
+    "style_match": 0.5757049918174744,
+    "style_match_ci95": 0.0,
+    "target_TV": 0.6103797611823002,
+    "target_TV_ci95": 0.0,
+    "KL_to_head_DPO": 1.8808220835821374,
+    "KL_to_head_DPO_ci95": 0.08167121197320246
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "method": "Head-DPO",
+    "risk": 0.20435297762611543,
+    "risk_ci95": 0.013685043769441935,
+    "style_match": 0.7104046511511373,
+    "style_match_ci95": 0.0684733134497552,
+    "target_TV": 0.6483425486470122,
+    "target_TV_ci95": 0.023433721136130833,
+    "KL_to_head_DPO": 0.0,
+    "KL_to_head_DPO_ci95": 0.0
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "method": "Audit-only",
+    "risk": 0.014480191734822187,
+    "risk_ci95": 0.0,
+    "style_match": 0.5,
+    "style_match_ci95": 0.0,
+    "target_TV": 0.0,
+    "target_TV_ci95": 0.0,
+    "KL_to_head_DPO": 2.486616111347773,
+    "KL_to_head_DPO_ci95": 0.237074711902076
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "method": "CAEA-0.5",
+    "risk": 0.10941658468046882,
+    "risk_ci95": 0.006842521884720958,
+    "style_match": 0.6873377700410146,
+    "style_match_ci95": 0.06882625988297696,
+    "target_TV": 0.3241712743235061,
+    "target_TV_ci95": 0.011716860568065417,
+    "KL_to_head_DPO": 0.6653802830806541,
+    "KL_to_head_DPO_ci95": 0.09365226851302538
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "method": "CAEA-1",
+    "risk": 0.014480191734822187,
+    "risk_ci95": 0.0,
+    "style_match": 0.6642708889308917,
+    "style_match_ci95": 0.07227431079058083,
+    "target_TV": 2.1118491468116036e-17,
+    "target_TV_ci95": 1.5278031520891981e-18,
+    "KL_to_head_DPO": 2.0260516975512677,
+    "KL_to_head_DPO_ci95": 0.1859065202076283
+  }
+]
