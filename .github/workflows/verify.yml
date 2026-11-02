@@ -13,3 +13,5 @@ jobs:
       - run: python code/review_audit.py
       - run: python code/verify_scale.py
       - run: python code/verify_external.py
+      - run: python -m unittest discover -s code -p test_research_integrity.py -v
+      - run: python code/evidence_audit_diagnostics.py --out /tmp/caea-auditor-diagnostics

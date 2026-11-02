@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "fresh_model_inference": false,
+  "exploratory": true,
+  "independent_new_test_cases": 0,
+  "source_protocol_sha256": "ca55aecb19e3db334f57c40beb02861a9a32521fba140ad1312e8ea3d9252af9",
+  "source_requests_sha256": "b41d249b40df94a618c369591ae47464c323e3b53e89f927e94d06a366e7b2ae",
+  "public_evidence_solver_max_label_error": 2.220446049250313e-16,
+  "label_mutation_check": "passed",
+  "risk_decomposition_check": "passed",
+  "bootstrap_scope": "paired test contexts; archived auditor fit fixed",
+  "limitations": [
+    "Task-specific grammar and known Bayesian assumptions",
+    "Solver is not a general free-text verifier",
+    "Post-hoc diagnostic on already inspected test cases",
+    "Full-repair risk is identical for audit-only and all backbones"
+  ]
+}

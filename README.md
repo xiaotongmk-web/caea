@@ -161,13 +161,32 @@ quantization confound causal effects of model scale or RLHF.
 
 ## Pending GPU replication
 
+An exploratory [public-evidence diagnostic](results/auditor_diagnostics/)
+now compares the learned auditor to a text-only Bayes-rule solver. On the
+same 128 contexts the formula target attains base regret 0.01466 versus
+0.08288 for the calibrated LM target, and preserves 98.37% rather than 2.96%
+of the aggregate informative-update magnitude. It reads public prompt
+evidence, not test labels. This task-specific competitor and the exact risk
+decomposition further expose the audit bottleneck; they are post-hoc replay,
+not new model inference or general language evidence.
+
+```bash
+python code/evidence_audit_diagnostics.py
+python -m unittest discover -s code -p test_research_integrity.py -v
+```
+
 [gpu/RENTAL_PLAN.md](gpu/RENTAL_PLAN.md) proposes a single RTX 4090 and a
 separate BF16 replication. `code/gpu_study.py` and `gpu/run_autodl.sh` are
 prepared, with pinned original HF revisions and incremental raw-score logs.
-No GPU has been rented or run by this artifact. The GPU runner has syntax
-and CPU preparation checks only; it must pass actual CUDA validation before
-its results are included. Rental requires the owner's account and explicit
-spending ceiling. Provider-side timed shutdown bounds idle billing.
+No GPU has been rented or run by this artifact. The runner now defaults to
+an eight-request smoke test, uses a separate smoke directory, checks CUDA/BF16
+and free disk before downloading weights, and validates resumed raw-score
+archives. Full analysis rejects incomplete and smoke archives. These paths
+have CPU integrity tests only; they must pass actual CUDA validation before
+their results are included. Rental requires the owner's account and spending
+ceiling. Verify a provider-side shutdown timer before launching the script.
+The staged [research plan](RESEARCH_PLAN_zh.md) defines the decision gates and
+additional evidence required for a stronger submission.
 
 ## Original small frozen-model inference
 

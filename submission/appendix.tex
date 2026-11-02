@@ -414,6 +414,43 @@ also attains lower regret (.0813) and lower KL (.1158) than half repair
 (.0923, .1354). The expanded study strengthens the failure analysis; it does
 not establish CAEA as an accuracy or risk--KL dominant method.
 
+\paragraph{A public-evidence competitor and error decomposition.}
+An additional post-hoc diagnostic parses the probability statements in the
+archived prompts and applies Bayes' rule, multiplying likelihood ratios only
+when the prompt explicitly states conditional independence. The predictor
+accepts only public evidence text; it has no access to stored test labels.
+It supports the two documented prompt grammars and is not a general
+language verifier. Across all archived requests its maximum disagreement
+with evaluation labels is below $10^{-12}$. Thus the earlier Bayesian
+oracle result is achievable by a task-specific evidence tool without
+label access, whereas the external math oracle remains privileged.
+
+On 128 Bayesian contexts, the formula target has full-report regret .01466
+on base evidence and .01367 after the additional observation, compared with
+the learned calibrated target's .08288 and .11908. Formula-minus-calibrated
+paired context-bootstrap intervals (5,000 replicates, fixed archived fit)
+are $[-.07985,-.05720]$ and $[-.11871,-.09211]$. These are exploratory
+comparisons on already inspected cases, not a new confirmatory test or
+additional model inference. Full-repair and audit-only risks remain equal.
+
+Let $a$ be the audit point estimate and $\mu=\mathbb E_{\tau_a}[Q]$.
+The report regret separates exactly as
+\begin{align*}
+ \mathbb E_{\tau_a}[(Q-p)^2]
+ &=\operatorname{Var}_{\tau_a}(Q)+(a-p)^2+(\mu-a)^2\\
+ &\quad+2(\mu-a)(a-p).
+\end{align*}
+For the calibrated base target, point-audit error contributes .06984,
+report variance .01288, squared grid bias .00001 and interaction .00015.
+This algebraic decomposition locates error; it is not a novelty claim.
+The calibrated target's mean absolute report change is 2.96\% of the true
+posterior change, versus 98.37\% for the formula target. These ratios compare
+aggregate absolute magnitudes; they are not causal attribution fractions.
+Formula-based deterministic nearest reports achieve regret .00570/.00469,
+further illustrating that spread-target matching need not minimize risk.
+The raw archives, decomposition and update diagnostics are released in
+\texttt{results/auditor\_diagnostics/}.
+
 \begin{figure}[t]
 \centering\includegraphics[width=\linewidth]{figures/scale_audit.pdf}
 \caption{Fresh response-bank results and constant-target control.

@@ -586,6 +586,11 @@ correct update directions. On Qwen-7B paraphrases, soft-score-8 beats half
 repair in both risk and KL. All 5,000 paired context-bootstrap comparisons,
 500 auditor-refit resamples and adverse conditions are archived.
 
+A post-hoc formula solver reading only the public Bayesian evidence text
+attains .0147 regret and .2883 mean absolute update, reproducing the oracle
+without test-label access. This task-specific competitor exposes the learned
+auditor bottleneck; it does not establish open-domain verification ability.
+
 Format sensitivity remains material: Qwen-7B external base regret changes
 from .4901 to .3219 after option permutation. SmolLM2's external mean
 candidate mass is .5992 and its valid greedy-letter rate is 26.6\%; no cases

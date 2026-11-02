@@ -1,3 +1,14 @@
+# Unreleased continuation - 2026-11-02
+
+- Added a public-evidence Bayes solver as a task-specific, label-free
+  competitor, plus exploratory archived-score risk and update diagnostics.
+- Documented that the calibrated auditor retains only 2.96% of aggregate
+  informative-update magnitude; the formula target retains 98.37%.
+- Added strict GPU-cache validation and tests for duplicate/corrupt scores,
+  prompt mismatches, incomplete archives and partial last writes.
+- Added CUDA/BF16/disk preflight and a separate eight-request smoke stage.
+- Added staged scientific decision gates; no GPU has yet been rented or run.
+
 # Experimental expansion 0.3.0 - 2026-11-02
 
 - Executed 4,224 unique fresh Bayesian requests on frozen official 1.54B/1.71B/7.61B Q4_K_M checkpoints, plus 448 exploratory external requests.

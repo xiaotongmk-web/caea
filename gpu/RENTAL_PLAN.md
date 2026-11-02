@@ -41,7 +41,12 @@ Clone the repository onto the instance and run:
 ```bash
 # Optional AutoDL-only shutdown after either completion or failure:
 export CAEA_AUTODL_SHUTDOWN=1
+# Set this only AFTER verifying a four-hour provider-side timer:
+export CAEA_PROVIDER_TIMER_CONFIRMED=1
+# Default stage is a separate 8-request-per-dataset smoke test.
 bash gpu/run_autodl.sh
+# After inspecting the smoke outputs and estimating the full-run cost:
+# CAEA_GPU_STAGE=full bash gpu/run_autodl.sh
 ```
 
 The runner saves native logits incrementally and packs partial/complete

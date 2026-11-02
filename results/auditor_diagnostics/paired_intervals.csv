@@ -1,0 +1,5 @@
+condition,metric,comparison,mean_difference,ci95_low,ci95_high,contexts,bootstrap_replicates
+base,point_regret,formula minus calibrated LM,-0.06984295711223995,-0.08113390495509971,-0.05889812655843233,128,5000
+base,full_report_regret,formula minus calibrated LM,-0.06822127333878547,-0.07985106811055029,-0.057203144007918906,128,5000
+new_evidence,point_regret,formula minus calibrated LM,-0.10589943510172818,-0.11910502552663513,-0.09247194611486259,128,5000
+new_evidence,full_report_regret,formula minus calibrated LM,-0.1054081872840913,-0.11870738220337083,-0.09211008891206976,128,5000
