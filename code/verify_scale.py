@@ -2,7 +2,7 @@
 
 No model downloads or inference are needed for this verifier.
 """
-import copy,json
+import copy,json,gzip
 import numpy as np
 from scale_study import (OUT,MODELS,QV,load_rows,digest,fit_auditor,calibrated,softmax)
 
@@ -20,6 +20,7 @@ def verify_protocol():
     assert sum(c['split']=='test'for c in cases)==128
     assert sum(r['kind']=='audit'for r in req)==1152
     assert sum(r['kind']=='select'for r in req)==1024
+    assert len({r['prompt_sha256']for r in req})==len(req)
     for r in req:
         assert digest(r['prompt'])==r['prompt_sha256']
         assert sorted(r['permutation'])==list(range(5 if r['kind']=='audit'else 10))
@@ -55,7 +56,7 @@ def verify_completed():
         assert all(r['selected_token']==r['choice_token_ids'][int(np.argmax(r['logits']))]
             for r in rows if r['selected_token']in r['choice_token_ids'])
     import csv
-    with open(OUT/'per_prompt_metrics.csv') as f:metrics=list(csv.DictReader(f))
+    with gzip.open(OUT/'per_prompt_metrics.csv.gz','rt') as f:metrics=list(csv.DictReader(f))
     groups={}
     for r in metrics:
         groups.setdefault((r['model'],r['case_id'],r['condition'],r['stance']),{})[r['method']]=r
@@ -67,6 +68,27 @@ def verify_completed():
             a=float(g[f'CAEA-{fraction:g}-calibrated']['report_regret'])
             b=(1-fraction)*float(g['LM-base']['report_regret'])+fraction*float(g['CAEA-1-calibrated']['report_regret'])
             assert abs(a-b)<1e-12
+    # Reconstruct endpoint risks independently from the archived native logits.
+    case_map={c['id']:c for c in cases}
+    for c in cases:
+        if c['split']!='test':continue
+        values=[]
+        for order in [0,1]:
+            r=next(r for r in req if r['id']==f"audit:{c['id']}:new_evidence:{order}")
+            values.append(float(softmax(np.array(audit[r['id']]['logits']))@QV[r['permutation']]))
+        raw[c['id'],'new_evidence']=float(np.mean(values))
+    for key in MODELS:
+        predictions={r['id']:r for r in load_rows(OUT/f'predictions_{key}.jsonl.gz')}
+        for r in req:
+            if r['kind']!='select':continue
+            c=case_map[r['case_id']];variant='new_evidence'if r['condition']=='new_evidence'else'base'
+            truth=c['p_new']if variant=='new_evidence'else c['p']
+            phat=float(calibrated(np.array(raw[c['id'],variant]),np.array(fit['weight'])))
+            tau=softmax(-(QV-phat)**2/.03)
+            base=softmax(np.array(predictions[r['id']]['logits']));q=QV[np.array(r['permutation'])//2]
+            g=groups[key,c['id'],r['condition'],str(r['stance'])]
+            assert abs(float(g['LM-base']['report_regret'])-base@((q-truth)**2))<1e-12
+            assert abs(float(g['CAEA-1-calibrated']['report_regret'])-tau@((QV-truth)**2))<1e-12
     record=dict(completed=True,independent_evidence_cases=len(cases),test_contexts=128,
         fresh_inference_requests=sum(len(load_rows(OUT/f'predictions_{key}.jsonl.gz'))for key in MODELS),
         test_label_mutation_leakage_check='passed',posterior_formula_check='passed',

@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "replicates": 500,
+  "training_cases_resampled": 256,
+  "validation_cases_resampled": 64,
+  "test_contexts_resampled": true,
+  "regularization_reselected_on_resampled_validation": true,
+  "external_labels_used_for_fitting": false,
+  "seconds": 8.008944034576416
+}

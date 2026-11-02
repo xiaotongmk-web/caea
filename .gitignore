@@ -7,3 +7,7 @@ __pycache__/
 *.blg
 *.synctex.gz
 .DS_Store
+
+/paper/main.pdf
+/gpu-results/
+/gpu-weights/

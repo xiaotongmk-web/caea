@@ -39,7 +39,8 @@ def dump_rows(path,rows):
 
 
 def write_csv(path,rows):
-    with path.open('w',newline='') as f:
+    opener=gzip.open if str(path).endswith('.gz')else open
+    with opener(path,'wt',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
 
 
@@ -221,6 +222,11 @@ def merge_shards(directory,shard_count):
             meta=json.loads(mm[0].read_text())
             assert meta['completed'] and meta['protocol_sha256']==digest(protocol)
             assert meta['shard_index']==i and meta['shard_count']==shard_count
+            assert meta['model_key']==key and meta['revision']==MODELS[key]['revision']
+            assert meta['fresh_inference'] and not meta['transformer_weights_updated']
+            if metas:
+                for field in ['engine_sha256','runtime_version','chat_template_sha256','upstream_weight_sha256']:
+                    assert meta[field]==metas[0][field],field
             for row in load_rows(matches[0]):
                 if row['id']in combined:raise RuntimeError('Duplicate inference request across shards')
                 combined[row['id']]=row
@@ -355,7 +361,7 @@ def analyse():
                 ix=rng.integers(0,len(delta),(5000,len(delta)));lo,hi=np.quantile(delta[ix].mean(1),[.025,.975])
                 item.update(paired_regret_difference=float(delta.mean()),paired_ci95_low=float(lo),paired_ci95_high=float(hi))
                 summaries.append(item)
-    write_csv(OUT/'per_prompt_metrics.csv',rows);write_csv(OUT/'summary.csv',summaries)
+    write_csv(OUT/'per_prompt_metrics.csv.gz',rows);write_csv(OUT/'summary.csv',summaries)
     responsiveness=[]
     test=[c for c in cases if c['split']=='test']
     mu_groups={}
@@ -388,7 +394,7 @@ def analyse():
         independent_test_contexts=protocol['test_evidence_cases'],calibration_split_fixed_for_intervals=True,
         rows=len(rows),summary_rows=len(summaries),fresh_neural_inference=True,
         limitations=['Quantized CPU candidate scoring','Same-family scale comparison confounded by model training differences',
-                    'Common learned auditor is not a trustworthy oracle','Controlled Bayesian tasks only','No full-model DPO, free-text evaluation or human study']))
+                    'Common learned auditor is not a trustworthy oracle','Finite probability-response banks','No full-model DPO, free-text evaluation or human study']))
     print(json.dumps([r for r in summaries if r['condition']=='base'and r['method']in['LM-base','CAEA-0.5-calibrated','CAEA-1-calibrated']],indent=2))
 
 

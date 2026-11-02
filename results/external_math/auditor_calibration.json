@@ -1,0 +1,49 @@
+{
+  "training_cases": 256,
+  "validation_cases": 64,
+  "selected": {
+    "regularization": 0.0,
+    "weight": [
+      0.24846637145376568,
+      -0.15978928991436323
+    ],
+    "validation_regret": 0.07765145735952066
+  },
+  "all_validation_results": [
+    {
+      "regularization": 0.0,
+      "weight": [
+        0.24846637145376568,
+        -0.15978928991436323
+      ],
+      "validation_regret": 0.07765145735952066
+    },
+    {
+      "regularization": 0.001,
+      "weight": [
+        0.33496705871193694,
+        -0.21184199171544557
+      ],
+      "validation_regret": 0.07775903539040178
+    },
+    {
+      "regularization": 0.01,
+      "weight": [
+        0.5884857195517028,
+        -0.3245665922453733
+      ],
+      "validation_regret": 0.07864106826162445
+    },
+    {
+      "regularization": 0.1,
+      "weight": [
+        0.8438383214573631,
+        -0.1964322243954011
+      ],
+      "validation_regret": 0.08646177715197875
+    }
+  ],
+  "training_mean": 0.4998747800866672,
+  "calibration_from": "scale/auditor_calibration.json",
+  "test_truth_used_for_fit": false
+}

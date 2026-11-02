@@ -1,0 +1,13 @@
+dataset,condition,metric,replicates,ci95_low,ci95_high
+scale,base,full_minus_training_mean,500,-0.004176647328762086,0.011702029038016279
+scale,base,point_minus_training_mean,500,-0.005662742555207143,0.00885165181139211
+scale,permuted,full_minus_training_mean,500,-0.003927845442984648,0.011508513337519545
+scale,permuted,point_minus_training_mean,500,-0.0055509680043664715,0.008600486611181646
+scale,paraphrase,full_minus_training_mean,500,-0.0037450809141397336,0.012267678449753103
+scale,paraphrase,point_minus_training_mean,500,-0.0050804213530128645,0.009076230645777417
+scale,new_evidence,full_minus_training_mean,500,-0.006152313322826945,0.007147042092926566
+scale,new_evidence,point_minus_training_mean,500,-0.007975526475729567,0.004840802428931561
+external_math,base,full_minus_training_mean,500,-0.019575323093263736,0.12160341022826497
+external_math,base,point_minus_training_mean,500,-0.022057451351632416,0.12214984228836595
+external_math,permuted,full_minus_training_mean,500,-0.020537964314216447,0.12889260693888713
+external_math,permuted,point_minus_training_mean,500,-0.023715906665421744,0.1299102654731022

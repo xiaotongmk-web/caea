@@ -6,6 +6,14 @@ Katherine Atwell, Pedram Heydari, Anthony Sicilia, and Malihe Alikhani.
 \newblock {BASIL}: Bayesian assessment of sycophancy in {LLMs}, 2026.
 \newblock arXiv:2508.16846, version 6.
 
+\bibitem[\protect\citeauthoryear{Cobbe \bgroup \em et al.\egroup
+  }{2021}]{cobbe2021}
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz
+  Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano,
+  Christopher Hesse, and John Schulman.
+\newblock Training verifiers to solve math word problems, 2021.
+\newblock arXiv:2110.14168.
+
 \bibitem[\protect\citeauthoryear{Csisz{\'a}r}{1975}]{csiszar1975}
 Imre Csisz{\'a}r.
 \newblock {I}-divergence geometry of probability distributions and minimization
@@ -39,10 +47,17 @@ Stephane Hatgis-Kessell, Myra Cheng, Xiaoxuan Hou, Qian Hu, Rahul Gupta,
   2026.
 \newblock arXiv:2610.02568, version 2.
 
-\bibitem[\protect\citeauthoryear{{Hugging Face}}{2024}]{smollm2}
+\bibitem[\protect\citeauthoryear{Hong \bgroup \em et al.\egroup
+  }{2025}]{hong2025}
+Jiseung Hong, Grace Byun, Seungone Kim, and Kai Shu.
+\newblock Measuring sycophancy of language models in multi-turn dialogues.
+\newblock In {\em Findings of the Association for Computational Linguistics:
+  EMNLP 2025}, pages 2239--2259, 2025.
+
+\bibitem[\protect\citeauthoryear{{Hugging Face}}{2024}]{smol17gguf}
 {Hugging Face}.
-\newblock {SmolLM2-135M-Instruct}: Model card, 2024.
-\newblock Model revision recorded in the accompanying results.
+\newblock {SmolLM2-1.7B-Instruct-GGUF}: Official model release, 2024.
+\newblock Pinned revision and Q4\_K\_M hashes in the experiment archive.
 
 \bibitem[\protect\citeauthoryear{Lanchantin \bgroup \em et al.\egroup
   }{2025}]{lanchantin2025}
@@ -54,8 +69,9 @@ Jack Lanchantin, Angelica Chen, Shehzaad Dhuliawala, Ping Yu, Jason Weston,
 \bibitem[\protect\citeauthoryear{Ma \bgroup \em et al.\egroup }{2026}]{ma2026}
 Huanhuan Ma, Henry~Peng Zou, Chengze Li, Enze Ma, Yunyue Su, and Philip~S. Yu.
 \newblock Sycophancy suppression can impair rational updating: Anti-sycophancy
-  should preserve the ability to update, 2026.
-\newblock arXiv:2608.26511; accepted to Findings of EMNLP 2026.
+  should preserve the ability to update.
+\newblock In {\em Findings of the Association for Computational Linguistics:
+  EMNLP 2026}, pages 25499--25515, 2026.
 
 \bibitem[\protect\citeauthoryear{Moya \bgroup \em et al.\egroup
   }{2026}]{moya2026}
@@ -66,10 +82,15 @@ Christian Moya, Alex Semendinger, Guang Lin, and Elliott Thornley.
   Learning}, volume 306 of {\em Proceedings of Machine Learning Research},
   pages 90714--90761, 2026.
 
-\bibitem[\protect\citeauthoryear{{Qwen Team}}{2024}]{qwen25}
+\bibitem[\protect\citeauthoryear{{Qwen Team}}{2024a}]{qwen15gguf}
 {Qwen Team}.
-\newblock {Qwen2.5-0.5B-Instruct}: Model card, 2024.
-\newblock Model revision recorded in the accompanying results.
+\newblock {Qwen2.5-1.5B-Instruct-GGUF}: Official model release, 2024.
+\newblock Pinned revision and Q4\_K\_M hashes in the experiment archive.
+
+\bibitem[\protect\citeauthoryear{{Qwen Team}}{2024b}]{qwen7gguf}
+{Qwen Team}.
+\newblock {Qwen2.5-7B-Instruct-GGUF}: Official model release, 2024.
+\newblock Pinned revision and Q4\_K\_M hashes in the experiment archive.
 
 \bibitem[\protect\citeauthoryear{Rafailov \bgroup \em et al.\egroup
   }{2023}]{rafailov2023}

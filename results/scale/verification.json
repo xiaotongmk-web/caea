@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "independent_evidence_cases": 448,
+  "test_contexts": 128,
+  "fresh_inference_requests": 4224,
+  "test_label_mutation_leakage_check": "passed",
+  "posterior_formula_check": "passed",
+  "raw_score_argmax_check": "passed",
+  "risk_decomposition_check": "passed",
+  "repair_identities_check": "passed"
+}

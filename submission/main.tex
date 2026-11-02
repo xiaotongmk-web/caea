@@ -27,25 +27,22 @@
 
 
 \begin{abstract}
-Pooled single-turn evaluations can miss whether an assistant amplifies
-belief differences over repeated interactions.
-We demonstrate this gap in a controlled binary response model: increasing
-agreement pressure leaves the entire pooled response--outcome distribution
-unchanged, while the mean-response dynamics change from convergence to
-separated stable beliefs. We study conflict-aware epistemic alignment
-(CAEA), which repairs an externally audited content distribution while
-retaining the preference policy within each content class. Classical KL
-projection quantifies the preference cost; coupling bounds relate repair
-strength to feedback contraction. Finite stance audits cannot certify
-global stability without additional regularity; a known curvature bound
-yields a finite-sample certificate. An extension preserves this ambiguity at arbitrarily small report regret. Ten-seed finite-action DPO experiments,
-stochastic simulations, and two frozen-language-model candidate-selector
-pilots illustrate these results and their limits. Full repair and audit-only
-have identical forecast risk by construction. Soft-score reweighting can
-achieve a better risk--KL tradeoff, and option permutations remove the
-pilots' initial DPO gains. The contribution is an analysis of audit
-observability, conditional repair, and stability under explicit assumptions;
-it does not establish benefits for human cognition or free-text generation.
+Pooled one-turn audits can hide feedback instability. We construct policies
+with identical pooled response--outcome laws but different mean-response
+stability, including an arbitrarily-small-regret extension. Conflict-aware
+epistemic alignment (CAEA) repairs an externally audited content marginal
+while retaining within-class policy. Classical KL projection accounts for
+preference cost; coupling bounds relate repair to contraction, and a finite
+audit certificate requires supplied curvature. Controlled DPO and stochastic
+simulations are complemented by 4,672 unique fresh scoring requests on three
+frozen 1.5B--7B checkpoints, with 256/64/128 Bayesian training/validation/test
+cases and 32 external correctness probes. A separately calibrated auditor
+uses no test labels. Constant-target, answer-order, informative-evidence and
+auditor-refit controls distinguish target quality from algebraic repair
+identities. The learned audit does not establish an advantage over simple
+shrinkage and strongly attenuates informative updates. The contribution is
+an audit-to-feedback analysis and reproducible failure study, without
+claims of full-model post-training or human benefit.
 \end{abstract}
 
 
@@ -69,8 +66,9 @@ The empirical contribution is controlled verification and failure analysis.
 Shared target information explains the identical report risks of full
 repair and audit-only; intermediate risk and target-TV changes follow
 algebraically. Conditional preference retention can fail to preserve
-aggregate style, and the frozen-neural pilot fails an option-permutation
-control. We do not claim a new general projection principle, robust
+aggregate style, and the original neural pilot fails an option-permutation
+control. A larger fresh study calibrates its auditor without test labels
+and compares three checkpoints up to 7.61B parameters against shrinkage. We do not claim a new general projection principle, robust
 free-text post-training, or validated benefits for human belief formation.
 
 \section{Related work}
@@ -97,6 +95,8 @@ proper-score regret follows scoring-rule theory \citep{gneiting2007}.
 Contraction arguments for random iterations are classical
 \citep{diaconis1999}. Diversity optimization \citep{lanchantin2025} addresses
 a different objective from matching a justified report target.
+SYCON studies free-form multi-turn sycophancy \citep{hong2025}; our finite
+response banks do not substitute for that setting.
 
 \section{Problem formulation}
 Let $x$ denote shared admissible evidence and $s\in[0,1]$ a user's stated
@@ -137,6 +137,8 @@ forecast regret; it is not a general prescription for epistemic uncertainty.
 Strong evidence can justify a concentrated target. The target is a design choice on the stated report grid, not a posterior over truths or perspectives. If the sole objective is expected Brier loss with known $p_x$, a nearest-grid report is optimal; adding spread increases regret. Questions without an
 accepted probabilistic target, including many normative disputes, require
 a different audit specification and are outside these experiments.
+The expanded non-oracle study substitutes a separately calibrated
+$\widehat p_x$; test labels evaluate but never construct those targets.
 
 
 \section{Conditional epistemic repair}
@@ -464,16 +466,7 @@ budget are different objectives; the repair does not dominate the latter.
 
 
 
-\begin{table*}[t]
-\centering\small
-\caption{Exploratory paired uncertainty over contexts and label seeds.
-Report difference is Head-DPO minus LM-base (negative is better);
-style difference is CAEA-1 minus Audit-only (positive is better).
-Intervals are percentile bootstrap intervals, not the seed-only
-Student-$t$ half-widths in the supplementary seed-only table.}
-\label{tab:paired}
-\input{table_review_uncertainty.tex}
-\end{table*}
+
 \subsection{Pressure controls and stochastic feedback}
 An additional 20 fitted DPO models use $k\in\{0,1,4,8\}$, five seeds each and
 16,000 training pairs per fit. The learned reward coefficients are rescaled to
@@ -538,100 +531,96 @@ is what rules out this failure in the certificate experiment.}
 
 
 
-\subsection{Frozen-backbone candidate selection}
-\label{sec:neural}
-We evaluate a constrained candidate-selection interface on
-SmolLM2-135M-Instruct and Qwen2.5-0.5B-Instruct \citep{smollm2,qwen25}.
-Each prompt specifies a prior and signal likelihoods, allowing an analytic
-Bayesian posterior. The evidence contexts are disjoint across training
-(40), validation (12), and test (24) splits. Two unsupported user stances
-per context yield 152 prompts per backbone, including 48 test prompts.
-Ten one-token options encode five forecast values and two abstract styles.
-Scores are normalized over these option letters; their mean unrestricted
-next-token probability mass on the test split is 0.77433 for SmolLM2 and
-0.91253 for Qwen.
+\subsection{Fresh multi-model candidate scoring}
+\label{sec:scale}
+Three frozen official Q4\_K\_M checkpoints cover Qwen2.5-1.5B,
+SmolLM2-1.7B and Qwen2.5-7B Instruct (1.54/1.71/7.61B parameters)
+\citep{qwen15gguf,smol17gguf,qwen7gguf}. A locally fixed, non-preregistered
+protocol uses 256/64/128 disjoint Bayesian training/validation/test contexts.
+Each test context has two unsupported stances and four conditions: base,
+answer permutation, evidence paraphrase and informative new evidence.
+Ten answer letters encode five probability reports and two literal styles.
+We archive pinned weight hashes, native logits, candidate mass and prompt
+fingerprints. No model weights are trained.
 
-All Transformer and original output-head weights remain frozen. A linear
-ten-option decision-head adapter uses an intercept and 16 principal
-components of final hidden states, fitted on training prompts only. We
-optimize the DPO pairwise likelihood with 16 Bradley--Terry pairs per
-training prompt and five label-sampling seeds. The regularization strength
-is selected from $\{0.001,0.01,0.1\}$ using validation pair NLL. The reward
-combines forecast error, agreement pressure $k=4$, and a 0.5 reward for the
-requested abstract style. The evidence target uses $T_E=0.03$.
+A common frozen Qwen-1.5B auditor sees evidence without stance, in two
+complementary answer orders. Only two monotone calibration parameters are
+fit on training cases, with regularization selected on validation cases.
+Targets use the estimated posterior and $T_E=.03$, without test labels.
+Fourteen methods include constant-training-mean, raw-auditor, audit-only,
+nearest-report, pooled-stance and explicit oracle controls; all protocol
+repair/soft-score settings are reported. Later controls are exploratory.
+There are 4,224 unique primary requests. An exploratory extension adds 448
+requests on 32 length-filtered GSM8K-derived numeric-claim correctness
+questions \citep{cobbe2021}, transferring the calibrator unchanged. This
+is not standard GSM8K solve accuracy.
 
+\begin{table*}[t]
+\centering\small
+\caption{Fresh study: half repair minus base regret; intervals refit the
+auditor and resample training/validation/test cases (500 repetitions).
+Two stance prompts are clustered within each of 128 Bayesian contexts or
+32 external questions. Half risk and gap changes obey the mixture identity.}
+\label{tab:scale}
+\resizebox{\textwidth}{!}{\input{table_scale.tex}}
+\end{table*}
 
+\begin{table*}[t]
+\centering\small
+\caption{Base-condition report regret for targets shared across backbones.
+Raw/calibrated are full repair; constant uses the training mean; nearest
+is deterministic; oracle has access to test truth.}
+\label{tab:auditor}
+\input{table_auditor.tex}
+\end{table*}
 
-\paragraph{Conditional and unconditional retention.}
-The fixed-bank results show that head-DPO lowers report regret relative
-to both frozen bases. Full repair and Audit-only again have the same
-regret, 0.01448, because they use the same class marginal. Full repair's
-unconditional style-match rate is lower than head-DPO's, despite exact
-preservation within each forecast class: changing the class mixture also
-changes the aggregate style mixture. Conditional preservation therefore
-does not guarantee unchanged overall style performance.
+Full calibrated Bayesian regret (.0829) scarcely differs from the constant
+target (.0840); their difference has auditor-refit interval
+$[-.0042,.0117]$. The external calibrated target (.2785) is worse in point
+estimate than constant (.2626), with a wide difference interval
+$[-.0196,.1216]$. Gains over base do not establish better evidence judgment
+than shrinkage. Equal full risks across backbones are an identity, not
+independent replications. Against informative evidence, full repair's mean
+absolute update is .0087 versus the posterior's .2931, with only 54.7\%
+correct update directions. On Qwen-7B paraphrases, soft-score-8 beats half
+repair in both risk and KL. All 5,000 paired context-bootstrap comparisons,
+500 auditor-refit resamples and adverse conditions are archived.
 
-\paragraph{Answer-order sensitivity.}
-An additional held-out control permutes the option-to-letter mapping
-without retraining or model selection. On these prompts, report regret
-is 0.20364 for the SmolLM2 base and 0.22048 for head-DPO; the corresponding
-Qwen values are 0.21639 and 0.22107. Thus the initial head-DPO improvements
-do not survive this control. Full-repair style-match rates fall to 0.45308
-and 0.49155, below Audit-only's 0.5. The retained within-class policy can
-itself encode position shortcuts. This pilot establishes execution on
-frozen neural scores, while its transfer failures limit interpretation
-of the learned selector.
-With a correct, permutation-consistent class map and sufficient candidate
-support, full repair enforces the specified class marginal even when the
-input scores change. It does not remove position shortcuts within a class,
-validate the class map, or guarantee unchanged aggregate style performance.
+Format sensitivity remains material: Qwen-7B external base regret changes
+from .4901 to .3219 after option permutation. SmolLM2's external mean
+candidate mass is .5992 and its valid greedy-letter rate is 26.6\%; no cases
+are excluded. These are conditional bank scores, not free-text rankings.
+The larger study supports the audit-quality limitation, rather than a
+claim of broadly effective epistemic correction.
 
-
-\paragraph{Paired evidence-context uncertainty.}
-To avoid treating two stances from one evidence context as independent,
-we replay the archived hidden states and fitted heads, average paired
-differences within each of 24 test contexts, and independently resample
-the five label seeds and 24 context clusters (5,000 crossed bootstrap
-replicates). Table~\ref{tab:paired} reports exploratory percentile intervals,
-conditional on the fixed training/validation split, backbone, and finite
-evidence grid. These do not cover training-context variation. For SmolLM2,
-the original-bank report-regret difference already has an interval spanning
-zero; for Qwen it is negative on the original bank. Both permutation-control
-intervals span zero. Full repair's positive style advantage on the original
-bank is not established after permutation. These results narrow the evidence
-for transfer rather than repairing the failed selector. This revision
-replays archived inference and does not claim a fresh model run. Maximum
-absolute deviation from recorded summary values is $5.91\times10^{-8}$,
-consistent with replay roundoff in the archived float32 PCA features.
-
-
-
-
+\paragraph{Original head-DPO pilot.}
+The earlier frozen 135M/0.5B head-DPO pilot used 40/12/24 contexts and five
+label seeds. Apparent gains failed an answer-permutation control. Those
+archived results and paired intervals remain in the supplement, distinct
+from the fresh inference above.
 
 \section{Discussion and limitations}
-Three distinctions govern interpretation. First, stability does not imply
-correctness: a stance-independent incorrect target can stabilize a false
-consensus. Our oracle or sampled targets isolate repair and do not solve
-evidence assessment. Increasing samples does not remove systematic auditor
-bias. Second, report classes must capture the signal driving the specified
-update; unmeasured persuasive wording invalidates that representation.
-Third, the deterministic bifurcation is not a zero-variance transition or
-a nonergodicity claim for the sampled process.
+Stability does not imply correctness. The synthetic oracle targets isolate
+repair, while the expanded study fits only two calibration parameters of a
+frozen auditor. Constant targets explain most apparent gains; more samples
+cannot remove systematic audit bias. Full repair and audit-only share risk.
+Spread increases report variance. Conditional preservation can retain
+position shortcuts and need not retain aggregate style.
 
-The main learner has six supplied features containing the true synthetic
-reward. The neural pilot uses frozen features, ten supplied options,
-24 test evidence contexts and five label seeds. Its answer-order failures
-remain negative results. Neither the finite-grid theorem nor these pilots
-certify an unrestricted language model: the global regularity and
-evidence-context coverage assumptions have not been established for it.
+Report classes must capture the signal driving the specified update;
+unmeasured persuasive wording invalidates that representation. The
+mean-response bifurcation is not a zero-variance or nonergodicity claim for
+the sampled process. Global regularity and evidence coverage have not been
+established for unrestricted language models.
 
-The next empirical test needs an independently evaluated non-oracle audit,
-equal evidence/candidate access across methods, unseen responses, and
-separate tests of unsupported pressure and informative new evidence.
-Free-text helpfulness and human belief effects require direct measurement;
-larger models alone do not establish them. Prospective human studies would
-also require applicable ethical review. The released controlled results
-support the stated observability and conditional-repair distinctions.
+Released checkpoints, quantization, training and interface differences
+confound causal parameter-scaling or RLHF claims. Candidate mass and order
+failures are reported without exclusions. The external task is a small,
+length-filtered correctness subset, possibly exposed in pretraining, not
+standard GSM8K solve accuracy. Bootstrap intervals exclude checkpoint and
+natural-conversation variation. Unseen free-text responses, independently
+adjudicated open-domain audits and human belief effects remain untested;
+human effects require direct measurement and applicable ethical review.
 
 \section{Conclusion}
 Pooled one-turn output quality does not identify feedback stability in the

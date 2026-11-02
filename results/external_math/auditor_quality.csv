@@ -1,0 +1,2 @@
+condition,evidence_contexts,raw_point_regret,calibrated_point_regret,training_mean_point_regret,mean_audit_order_disagreement
+base,32,0.3155184508341794,0.262059393487991,0.2500000156800267,0.0824876715920517

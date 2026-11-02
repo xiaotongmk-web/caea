@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "independent_source_questions": 32,
+  "fresh_inference_requests": 448,
+  "inherited_calibrator_unchanged": true,
+  "external_labels_used_for_fitting": false,
+  "source_solution_and_claim_check": "passed",
+  "prompt_fingerprints": "passed",
+  "repair_identities": "passed"
+}

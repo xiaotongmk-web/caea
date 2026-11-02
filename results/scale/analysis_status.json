@@ -1,0 +1,20 @@
+{
+  "completed": true,
+  "models": [
+    "qwen15",
+    "qwen7",
+    "smol17"
+  ],
+  "independent_test_contexts": 128,
+  "calibration_split_fixed_for_intervals": true,
+  "rows": 43008,
+  "summary_rows": 168,
+  "fresh_neural_inference": true,
+  "limitations": [
+    "Quantized CPU candidate scoring",
+    "Same-family scale comparison confounded by model training differences",
+    "Common learned auditor is not a trustworthy oracle",
+    "Finite probability-response banks",
+    "No full-model DPO, free-text evaluation or human study"
+  ]
+}

@@ -26,25 +26,22 @@ Qingdao, China}
 \maketitle
 
 \begin{abstract}
-Pooled single-turn evaluations can miss whether an assistant amplifies
-belief differences over repeated interactions.
-We demonstrate this gap in a controlled binary response model: increasing
-agreement pressure leaves the entire pooled response--outcome distribution
-unchanged, while the mean-response dynamics change from convergence to
-separated stable beliefs. We study conflict-aware epistemic alignment
-(CAEA), which repairs an externally audited content distribution while
-retaining the preference policy within each content class. Classical KL
-projection quantifies the preference cost; coupling bounds relate repair
-strength to feedback contraction. Finite stance audits cannot certify
-global stability without additional regularity; a known curvature bound
-yields a finite-sample certificate. An extension preserves this ambiguity at arbitrarily small report regret. Ten-seed finite-action DPO experiments,
-stochastic simulations, and two frozen-language-model candidate-selector
-pilots illustrate these results and their limits. Full repair and audit-only
-have identical forecast risk by construction. Soft-score reweighting can
-achieve a better risk--KL tradeoff, and option permutations remove the
-pilots' initial DPO gains. The contribution is an analysis of audit
-observability, conditional repair, and stability under explicit assumptions;
-it does not establish benefits for human cognition or free-text generation.
+Pooled one-turn audits can hide feedback instability. We construct policies
+with identical pooled response--outcome laws but different mean-response
+stability, including an arbitrarily-small-regret extension. Conflict-aware
+epistemic alignment (CAEA) repairs an externally audited content marginal
+while retaining within-class policy. Classical KL projection accounts for
+preference cost; coupling bounds relate repair to contraction, and a finite
+audit certificate requires supplied curvature. Controlled DPO and stochastic
+simulations are complemented by 4,672 unique fresh scoring requests on three
+frozen 1.5B--7B checkpoints, with 256/64/128 Bayesian training/validation/test
+cases and 32 external correctness probes. A separately calibrated auditor
+uses no test labels. Constant-target, answer-order, informative-evidence and
+auditor-refit controls distinguish target quality from algebraic repair
+identities. The learned audit does not establish an advantage over simple
+shrinkage and strongly attenuates informative updates. The contribution is
+an audit-to-feedback analysis and reproducible failure study, without
+claims of full-model post-training or human benefit.
 \end{abstract}
 
 
@@ -95,8 +92,9 @@ conditional on supplied regularity. The KL projection itself is classical,
 and closest-KL anti-sycophancy correction is prior work. The coupling and finite-grid arguments use standard proof techniques; we claim their explicit audit-to-feedback connection rather than a new general projection or contraction principle. Our analysis asks
 what the audit observes, what intervention its target requires, and which
 feedback guarantee follows. Controlled training and simulations test the
-implementation and expose adverse baselines, auditor failure, and neural
-selector transfer failures.
+implementation. A larger fresh-inference study separately calibrates a common
+auditor, evaluates three checkpoints up to 7.61B parameters, and retains
+paired stance, external-task and adverse-baseline controls.
 
 \begin{figure}[t]
 \centering\includegraphics[width=\linewidth]{figures/audit_concept.pdf}
@@ -142,6 +140,11 @@ answers need not be well calibrated. We use standard statistical quantities
 to keep these distinctions explicit. Contraction of random iterations is classical \citep{diaconis1999}; the coupling below specializes that reasoning to a shared audit target.
 
 
+\paragraph{Broader evaluations.}
+SYCON evaluates multi-turn free-form sycophancy \citep{hong2025}; our finite
+answer banks do not substitute for that setting. External probes below are
+a transformed GSM8K subset \citep{cobbe2021}, not standard solve accuracy.
+
 \section{Problem formulation}
 Let $x$ denote shared admissible evidence and $s\in[0,1]$ a user's stated
 probability. Holding $x$ fixed while changing $s$ represents an intervention
@@ -170,8 +173,8 @@ as learned policies rather than assumed to reach this ideal optimum.
 Write $m_P(c\mid x,s)=\sum_{y:c_x(y)=c}\pi_P(y\mid x,s)$.
 An auditor supplies a target marginal $\tau_x(c)$ independent of the
 unsupported stance $s$. The auditor and the class map are inputs to CAEA.
-In the controlled experiments, the Bernoulli evidence probability $p_x$
-is known, and the target is
+In the synthetic oracle experiments, the Bernoulli evidence probability
+$p_x$ is known, and the target is
 \begin{equation}
  \tau_x(c)\propto\exp\{-(q_c-p_x)^2/T_E\},\qquad T_E>0.
  \label{eq:target}
@@ -181,6 +184,9 @@ forecast regret; it is not a general prescription for epistemic uncertainty.
 Strong evidence can justify a concentrated target. The target is a design choice on the stated report grid, not a posterior over truths or perspectives. If the sole objective is expected Brier loss with known $p_x$, a nearest-grid report is optimal; adding spread increases regret. Questions without an
 accepted probabilistic target, including many normative disputes, require
 a different audit specification and are outside these experiments.
+The expanded study substitutes an independently calibrated estimate
+$\widehat p_x$ for $p_x$; test truth evaluates non-oracle methods but never
+constructs their targets.
 
 
 \section{Conditional epistemic repair}
@@ -210,7 +216,11 @@ once the target is supplied. Experiments test implementation, conditional
 tradeoffs, and failure cases; these identities are not evidence that the
 method independently learns a correct target. Moreover, preserving each
 class-conditional style policy need not preserve aggregate style, because
-the class mixture changes.
+the class mixture changes. Equation~\eqref{eq:riskidentity} also implies
+$\mathcal R(\pi_\lambda)-\mathcal R(\pi_P)=
+\lambda[\mathcal R(\pi_1)-\mathcal R(\pi_P)]$. A less accurate target
+therefore increases report regret for every positive repair fraction, even
+when it removes unsupported stance dependence.
 
 \begin{proposition}[KL projection and preference cost]
 \label{prop:projection}
@@ -608,6 +618,10 @@ error and its conservative expectation bound.}
 \label{sec:neural}
 \input{neural_section.tex}
 
+\subsection{Expanded study with a calibrated auditor}
+\label{sec:scale}
+\input{scale_section.tex}
+
 
 \section{Discussion and limitations}
 The findings distinguish three questions that a single score cannot answer:
@@ -619,13 +633,14 @@ forecast risk in our experiments, whereas conditional preference retention
 and longitudinal stability require separate analyses.
 
 \paragraph{Dependence on the auditor.}
-The experiments provide a known evidence posterior or samples from a
-stipulated trustworthy target. This isolates the repair mechanism but does
-not solve evidence assessment. The audit-only comparison makes that
-information advantage explicit. Systematic auditor bias is not controlled
-by increasing the number of samples from the same biased source.
+The synthetic experiments provide oracle posteriors or sampled stipulated
+targets. The expanded study separately calibrates a frozen evidence-only
+auditor. It removes direct test-truth access for non-oracle targets, but does
+not establish reliable evidence assessment: constant-target controls explain
+most of the observed gain. More samples cannot remove systematic target
+bias. Full repair and audit-only still share the same report risk.
 
-\paragraph{A non-oracle implementation path (not evaluated).}
+\paragraph{An open-domain implementation path (not evaluated).}
 A practical candidate selector could retrieve independently sourced evidence,
 extract verifiable claims, and assign candidate responses to report classes
 using a separately evaluated verifier. Target probabilities would require
@@ -653,20 +668,23 @@ stability nor reduced simulated dispersion establishes improved human
 reasoning, which requires direct behavioral evidence.
 
 \paragraph{Empirical scope.}
-The main experiments use finite action spaces. The neural pilot trains a
-candidate decision head on frozen features, with a fixed small prompt
-split and label-seed confidence intervals. Option permutations reverse
-some gains, limiting transfer even within this format. The results do not
-establish effects on free-text generation, general helpfulness, or full
-language-model post-training. A broader evaluation should equalize evidence
-and auditing access across methods, vary response order and wording, and
-separately test unsupported pressure and informative new evidence.
-The decisive next test is therefore more than a larger backbone: learn the
-audit from independent evidence, evaluate unseen free-text responses with
-held-out adjudication, and compare methods given the same evidence and
-candidate access. A larger-model qualitative example alone would not close
-these gaps. Human belief benefits would additionally require a prospectively
-designed behavioral study and the applicable ethics review.
+The expanded study increases the model range and separates 256/64/128
+calibration-training/validation/test cases, with 32 exploratory external
+questions. These are frozen, quantized checkpoints scoring finite response
+banks. Training differences, model family, format and quantization confound
+causal claims about parameter count or RLHF. Candidate mass and order
+sensitivity are reported without post-hoc exclusions. The external subset
+is length-filtered, small, and possibly exposed in pretraining; it does not
+estimate standard GSM8K solve accuracy. Context-bootstrap intervals
+condition on the fitted auditor; auditor-refit intervals also resample its
+training/validation cases. Neither covers checkpoints or natural conversations.
+The original small head-DPO pilot and its permutation failures remain reported.
+
+Further progress requires unseen free-text responses, independently
+adjudicated audits and matched evidence access. Larger backbones alone do
+not validate the report representation, supplied regularity or human update
+model. Human belief benefits require direct behavioral evidence and
+applicable ethical review.
 
 \section{Conclusion}
 Pooled one-turn output quality does not identify feedback stability in the
@@ -677,7 +695,8 @@ Contraction bounds connect repair strength to feedback control, while
 finite-audit results show why certification requires additional regularity.
 The controlled experiments support these distinctions and expose their
 dependence on auditor validity, response representation, and the update
-model. Together, the results provide a framework for separating what a
+model. The larger calibrated-auditor study reinforces the importance of
+simple shrinkage controls and preserving informative updating. Together, the results provide a framework for separating what a
 preference policy says in isolation from how its conditional behavior can
 shape repeated belief updates.
 
@@ -696,7 +715,7 @@ human participants or collected personal conversations.
 \section*{Reproducibility and tool use}
 The accompanying research package contains experiment code, per-seed outputs,
 model revision hashes, prompts, fitted decision-head parameters, and figure
-generation scripts. The revised finite-action, pressure, stochastic, and finite-audit results were regenerated. The frozen-neural results were replayed from archived hidden states and logits, not obtained by fresh backbone inference during this revision. The replay includes paired uncertainty estimates and checks against recorded outputs.
+generation scripts. The finite-action, pressure, stochastic, and finite-audit results were regenerated. The original small head-DPO pilot was replayed from archived arrays with paired uncertainty checks. Separately, the expanded study executes 4,672 unique fresh requests on three official, SHA-256-verified Q4\_K\_M checkpoints. The protocol was fixed locally before inference, without external preregistration; later controls and the external extension are explicitly exploratory. Native logits, candidate mass, prompt hashes, model revisions and execution metadata are archived. No model weights are redistributed.
 Computational checks do not replace independent validation of mathematical
 arguments or empirical assumptions. No human-participant study was conducted.
 Generative AI tools assisted mathematical formalization, proof drafting, experimental design, code, analysis, figures, and writing. This statement describes tool use rather than assigning authorship; the named author remains responsible for the submitted work. Reproduction details and numerical checks appear in Appendix~\ref{app:repro}.

@@ -1,0 +1,12 @@
+{
+  "primary_run": "https://github.com/xiaotongmk-web/caea/actions/runs/41402914076",
+  "external_run": "https://github.com/xiaotongmk-web/caea/actions/runs/41404347483",
+  "primary_source_commit": "f658dceee3e1a405ac99f6aa8eb2ce02a5a43910",
+  "external_source_commit": "259230f62923c22b22ff69d594881506001a11e9",
+  "completed_jobs": 24,
+  "failed_jobs": 0,
+  "primary_unique_requests": 4224,
+  "external_unique_requests": 448,
+  "compute": "standard public GitHub Actions CPU runners",
+  "gpu_rental_performed": false
+}

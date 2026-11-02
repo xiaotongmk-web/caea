@@ -5,8 +5,10 @@
 [Manuscript](paper/CAEA.pdf) | [Repository](https://github.com/xiaotongmk-web/caea) | [Citation](CITATION.cff) | [Recorded data](results/)
 
 This unpublished theory and controlled computational study has no assigned arXiv
-identifier or DOI. The neural pilots use frozen backbones and trained candidate
-heads. There is no full-model post-training, free-text evaluation or human study.
+identifier or DOI. The original neural pilots use frozen backbones and trained candidate
+heads. Version 0.3 adds 4,672 unique fresh study requests on three frozen
+official Q4_K_M checkpoints up to 7.61B parameters, with a separately
+calibrated common auditor and an exploratory external correctness task. There is no full-model post-training, free-text evaluation or human study.
 
 ## Main finding
 
@@ -43,6 +45,8 @@ deterministic trajectories; it does not measure human behavior.
 ```bash
 python code/verify_results.py
 python code/review_audit.py
+python code/verify_scale.py
+python code/verify_external.py
 ```
 
 The first checks study consistency. The second independently replays archived
@@ -85,7 +89,87 @@ folder and invokes pdflatex/bibtex.
 | Frozen-neural pilot | 40/12/24 train/validation/test contexts, 152 prompts/model, 5 label seeds |
 | Transfer control | 48 permuted prompts/model; no robust DPO gain established |
 
-## Fresh frozen-model inference
+## Expanded fresh-inference study (v0.3)
+
+| Component | Actual completed scope |
+| --- | --- |
+| Backbones | Qwen2.5-1.5B / SmolLM2-1.7B / Qwen2.5-7B Instruct, official Q4_K_M |
+| Parameters | 1.54B / 1.71B / 7.61B |
+| Bayesian contexts | 256 training / 64 validation / 128 independent test |
+| Primary conditions | Base, permuted options, paraphrased evidence, informative new evidence |
+| Primary fresh requests | 1,152 common-auditor + 1,024 selector per backbone = 4,224 |
+| External probes | 32 length-filtered GSM8K-derived questions, 16 correct / 16 wrong numeric claims |
+| External fresh requests | 64 common-auditor + 128 selector per backbone = 448 |
+| Independent test units | 128 Bayesian contexts plus 32 source questions; prompts/model repeats add no units |
+| Comparisons | All fourteen methods and all protocol coefficients |
+| Uncertainty | 5,000 paired context resamples; 500 auditor-refit train/validation/test resamples |
+
+The locally fixed execution protocol precedes study inference but is not an
+external preregistration. Later controls and the external extension are
+explicitly exploratory. The frozen Qwen-1.5B common auditor sees evidence
+without stance, in two complementary answer orders. Only two calibration
+parameters are fit. Training labels fit them; validation labels select
+regularization; test labels evaluate non-oracle policies only. The external
+calibrator is transferred unchanged.
+
+**The expanded results do not establish superiority over simple shrinkage.**
+Full Bayesian calibrated-target regret is 0.0829 versus constant-target
+0.0840; the refitted difference interval includes zero. External calibrated
+target regret is 0.2785 versus constant 0.2626. Full repair nearly suppresses
+informative updating (mean absolute update 0.0087 versus true 0.2931).
+All full-repair backbones and audit-only share report risk by construction.
+Option-order and low-candidate-mass failures remain included. This is a
+controlled audit-quality failure study, not free-text model benchmarking.
+
+Reanalyse the archived native scores without model downloads:
+
+```bash
+python code/scale_study.py analyse
+python code/external_study.py analyse
+python code/auditor_refit_bootstrap.py --replicates 500
+python code/scale_report.py
+python code/verify_scale.py
+python code/verify_external.py
+```
+
+Fresh CPU inference uses the official wheel index, pinned weights and prompt
+archives. The three downloads total roughly 6.9 GB; the 7B quantized model
+requires RAM beyond its 4.7 GB weight size. Run one model process at a time
+on a memory-limited machine.
+
+```bash
+python -m pip install --only-binary=llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu -r requirements-core.txt -r requirements-scale.txt
+python code/scale_models.py --directory /tmp/caea-weights
+python code/scale_study.py infer --model qwen15 --weights /tmp/caea-weights --cache /tmp/caea-cache --threads 4
+python code/scale_study.py infer --model smol17 --weights /tmp/caea-weights --cache /tmp/caea-cache --threads 4
+python code/scale_study.py infer --model qwen7 --weights /tmp/caea-weights --cache /tmp/caea-cache --threads 4
+python code/external_study.py infer --model qwen15 --weights /tmp/caea-weights --cache /tmp/caea-external-cache --threads 4 --shard-count 1
+```
+
+Repeat the external command for `smol17` and `qwen7`. Use a fresh cache when
+execution metadata changes. The workflows show four disjoint context shards
+per model; `merge --artifacts DIRECTORY --shard-count 4` checks complete
+coverage, revision/engine consistency and fingerprints before combining.
+The current llama binding's live native logits are used, rather than an
+unpopulated `model.scores` array. Candidate mass and greedy-letter adherence
+are archived. No post-hoc format exclusions are made.
+
+The external task is transformed numeric-claim correctness on a small,
+short-question subset, not standard GSM8K solve accuracy. Possible benchmark
+pretraining exposure is not excluded. Checkpoints, family, training and
+quantization confound causal effects of model scale or RLHF.
+
+## Pending GPU replication
+
+[gpu/RENTAL_PLAN.md](gpu/RENTAL_PLAN.md) proposes a single RTX 4090 and a
+separate BF16 replication. `code/gpu_study.py` and `gpu/run_autodl.sh` are
+prepared, with pinned original HF revisions and incremental raw-score logs.
+No GPU has been rented or run by this artifact. The GPU runner has syntax
+and CPU preparation checks only; it must pass actual CUDA validation before
+its results are included. Rental requires the owner's account and explicit
+spending ceiling. Provider-side timed shutdown bounds idle billing.
+
+## Original small frozen-model inference
 
 ```bash
 python -m pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cpu
@@ -116,7 +200,9 @@ fingerprints and describe that as newly verified inference.
 
 ## Build and citation
 
-`python code/build_paper.py` requires pdflatex and bibtex. The official-style
+`python code/build_paper.py` requires pdflatex and bibtex.
+`python code/build_submission.py --compile` rebuilds the anonymous manuscript
+and supplement from the public text and stable official-style base. The official-style
 anonymous manuscript and proofs are in `submission/`; build main before appendix
 because the latter reads its cross-reference file. Keep public author details,
 citation files and this README out of the anonymous supplementary archive.
