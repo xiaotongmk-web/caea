@@ -256,6 +256,17 @@ def calibrated(raw,w):
 def softmax(a):return np.exp(a-logsumexp(a,axis=-1,keepdims=True))
 
 
+def fit_auditor(cases,raw,regularization_grid):
+    tr=[c for c in cases if c['split']=='train'];va=[c for c in cases if c['split']=='validation']
+    xtr=np.array([raw[c['id'],'base']for c in tr]);ytr=np.array([c['p']for c in tr])
+    xva=np.array([raw[c['id'],'base']for c in va]);yva=np.array([c['p']for c in va])
+    trials=[]
+    for reg in regularization_grid:
+        w=calibrate(xtr,ytr,reg);trials.append(dict(regularization=reg,weight=w.tolist(),
+            validation_regret=float(np.mean((calibrated(xva,w)-yva)**2))))
+    return min(trials,key=lambda r:r['validation_regret']),trials,float(ytr.mean())
+
+
 def analyse():
     protocol=json.loads((OUT/'protocol.json').read_text());cases=load_rows(OUT/'cases.jsonl.gz')
     requests=load_rows(OUT/'requests.jsonl.gz');byid={c['id']:c for c in cases}
@@ -263,7 +274,7 @@ def analyse():
     auditor={r['id']:r for r in load_rows(OUT/'predictions_qwen15.jsonl.gz')}
     raw={};audit_rows=[]
     for c in cases:
-        for variant in (['base','new_evidence']if c['split']=='test'else['base']):
+        for variant in (['base','new_evidence']if c['split']=='test'and 'new_evidence'in protocol['conditions']else['base']):
             estimates=[]
             for order in [0,1]:
                 r=next(r for r in requests if r['id']==f"audit:{c['id']}:{variant}:{order}")
@@ -272,15 +283,15 @@ def analyse():
             raw[c['id'],variant]=float(np.mean(estimates))
             audit_rows.append(dict(case_id=c['id'],split=c['split'],condition=variant,raw_mean=float(np.mean(estimates)),
                 order_disagreement=abs(estimates[0]-estimates[1]),p=c['p_new']if variant=='new_evidence'else c['p']))
-    tr=[c for c in cases if c['split']=='train'];va=[c for c in cases if c['split']=='validation']
-    xtr=np.array([raw[c['id'],'base']for c in tr]);ytr=np.array([c['p']for c in tr])
-    xva=np.array([raw[c['id'],'base']for c in va]);yva=np.array([c['p']for c in va])
-    trials=[]
-    for reg in protocol['calibration_regularization_grid']:
-        w=calibrate(xtr,ytr,reg);trials.append(dict(regularization=reg,weight=w.tolist(),validation_regret=float(np.mean((calibrated(xva,w)-yva)**2))))
-    selected=min(trials,key=lambda r:r['validation_regret']);w=np.array(selected['weight'])
-    write_json(OUT/'auditor_calibration.json',dict(training_cases=len(tr),validation_cases=len(va),
-        selected=selected,all_validation_results=trials,test_truth_used_for_fit=False))
+    if protocol.get('calibration_from'):
+        source=json.loads((OUT.parent/protocol['calibration_from']).read_text())
+        selected=source['selected'];trials=source['all_validation_results'];training_mean=source['training_mean']
+    else:
+        selected,trials,training_mean=fit_auditor(cases,raw,protocol['calibration_regularization_grid'])
+    w=np.array(selected['weight'])
+    write_json(OUT/'auditor_calibration.json',dict(training_cases=protocol['train_evidence_cases'],validation_cases=protocol['validation_evidence_cases'],
+        selected=selected,all_validation_results=trials,training_mean=training_mean,
+        calibration_from=protocol.get('calibration_from'),test_truth_used_for_fit=False))
     for r in audit_rows:r['calibrated_mean']=float(calibrated(np.array(r['raw_mean']),w))
     write_csv(OUT/'auditor_predictions.csv',audit_rows)
     # Inference requests are the only method inputs; labels below are evaluation-only.
@@ -298,10 +309,19 @@ def analyse():
             base=softmax(np.array(r['logits']));m=np.array([base[classes==j].sum()for j in range(5)])
             tau=softmax(-(QV-phat)**2/TEMP);tau_raw=softmax(-(QV-rawp)**2/TEMP)
             oracle=softmax(-(QV-truth)**2/TEMP)
+            constant=softmax(-(QV-training_mean)**2/TEMP)
             full=base*tau[classes]/m[classes]
+            nearest=np.zeros(5);nearest[np.argmin((QV-phat)**2)]=1.
+            pooled=np.zeros(5)
+            for stance in [.1,.9]:
+                pair=softmax(np.array(pred[f"select:{c['id']}:{req['condition']}:{stance}"]['logits']))
+                pooled+=np.array([pair[classes==j].sum()for j in range(5)])/2
             methods={'LM-base':base,'Audit-only-calibrated':tau[classes]/2,
                 'CAEA-full-raw-audit':base*tau_raw[classes]/m[classes],
-                'Oracle-full':base*oracle[classes]/m[classes]}
+                'Oracle-full':base*oracle[classes]/m[classes],
+                'Training-mean-audit':base*constant[classes]/m[classes],
+                'CAEA-nearest-calibrated':base*nearest[classes]/m[classes],
+                'Pooled-stances':base*pooled[classes]/m[classes]}
             for fraction in protocol['partial_fractions']:
                 methods[f'CAEA-{fraction:g}-calibrated']=(1-fraction)*base+fraction*full
             for penalty in protocol['soft_score_penalties']:
@@ -311,6 +331,7 @@ def analyse():
                 mm=np.array([pi[classes==j].sum()for j in range(5)])
                 rows.append(dict(model=key,case_id=c['id'],condition=req['condition'],stance=req['stance'],method=method,
                     report_regret=float(pi@((q-truth)**2)),mean_report=float(pi@q),
+                    mean_report_squared_error=float((pi@q-truth)**2),report_variance=float(pi@((q-pi@q)**2)),
                     style_match=float(pi@(style==c['preferred_style'])),
                     target_TV=float(.5*np.abs(mm-tau).sum()),oracle_target_TV=float(.5*np.abs(mm-oracle).sum()),
                     KL_to_base=float(np.sum(pi*(np.log(np.maximum(pi,1e-300))-np.log(np.maximum(base,1e-300))))),
@@ -335,6 +356,34 @@ def analyse():
                 item.update(paired_regret_difference=float(delta.mean()),paired_ci95_low=float(lo),paired_ci95_high=float(hi))
                 summaries.append(item)
     write_csv(OUT/'per_prompt_metrics.csv',rows);write_csv(OUT/'summary.csv',summaries)
+    responsiveness=[]
+    test=[c for c in cases if c['split']=='test']
+    mu_groups={}
+    for r in rows:mu_groups.setdefault((r['model'],r['method'],r['case_id'],r['condition']),[]).append(r['mean_report'])
+    for key in dict.fromkeys(r['model']for r in rows):
+        if 'new_evidence'not in protocol['conditions']:continue
+        for method in dict.fromkeys(r['method']for r in rows if r['model']==key):
+            deltas=[];truths=[]
+            for c in test:
+                groups={condition:mu_groups[key,method,c['id'],condition]for condition in ['base','new_evidence']}
+                assert all(len(g)==2 for g in groups.values())
+                deltas.append(np.mean(groups['new_evidence'])-np.mean(groups['base']));truths.append(c['p_new']-c['p'])
+            deltas=np.array(deltas);truths=np.array(truths)
+            responsiveness.append(dict(model=key,method=method,evidence_contexts=len(test),
+                correct_direction_rate=float(np.mean(deltas*truths>1e-12)),
+                mean_absolute_update=float(np.mean(abs(deltas))),oracle_mean_absolute_update=float(np.mean(abs(truths))),
+                update_squared_error=float(np.mean((deltas-truths)**2))))
+    if responsiveness:write_csv(OUT/'informative_update.csv',responsiveness)
+    audit_summary=[]
+    for condition in ['base','new_evidence']:
+        if condition not in protocol['conditions']:continue
+        rr=[r for r in audit_rows if r['split']=='test'and r['condition']==condition]
+        y=np.array([r['p']for r in rr]);a=np.array([r['raw_mean']for r in rr]);b=np.array([r['calibrated_mean']for r in rr])
+        audit_summary.append(dict(condition=condition,evidence_contexts=len(rr),
+            raw_point_regret=float(np.mean((a-y)**2)),calibrated_point_regret=float(np.mean((b-y)**2)),
+            training_mean_point_regret=float(np.mean((training_mean-y)**2)),
+            mean_audit_order_disagreement=float(np.mean([r['order_disagreement']for r in rr]))))
+    write_csv(OUT/'auditor_quality.csv',audit_summary)
     write_json(OUT/'analysis_status.json',dict(completed=True,models=sorted(set(r['model']for r in rows)),
         independent_test_contexts=protocol['test_evidence_cases'],calibration_split_fixed_for_intervals=True,
         rows=len(rows),summary_rows=len(summaries),fresh_neural_inference=True,

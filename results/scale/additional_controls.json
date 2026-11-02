@@ -1,0 +1,12 @@
+{
+  "recorded_utc": "2026-11-02T06:58:01Z",
+  "status": "Robustness controls added after the fixed execution protocol; inference prompts and primary comparison unchanged",
+  "controls": [
+    "Training-mean constant audit",
+    "Pooled two-stance marginal",
+    "Nearest calibrated report",
+    "Auditor standalone quality",
+    "Informative evidence update responsiveness"
+  ],
+  "note": "These do not add model queries or use test labels to construct non-oracle policies."
+}

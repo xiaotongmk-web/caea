@@ -1,0 +1,7 @@
+{
+  "logits_extraction_max_abs_error": 0.0,
+  "tokens": 42,
+  "runtime": "llama-cpp-python 0.3.36",
+  "test": "Independent binding all-logits buffer versus live native last-token scores",
+  "study_case": false
+}
