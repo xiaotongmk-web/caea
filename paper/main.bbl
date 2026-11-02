@@ -1,4 +1,4 @@
-\begin{thebibliography}{13}
+\begin{thebibliography}{14}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -18,6 +18,12 @@ Imre Csisz{\'a}r.
 \newblock \emph{The Annals of Probability}, 3\penalty0 (1):\penalty0 146--158,
   1975.
 \newblock \doi{10.1214/aop/1176996454}.
+
+\bibitem[Diaconis \& Freedman(1999)Diaconis and Freedman]{diaconis1999}
+Persi Diaconis and David Freedman.
+\newblock Iterated random functions.
+\newblock \emph{SIAM Review}, 41\penalty0 (1):\penalty0 45--76, 1999.
+\newblock \doi{10.1137/S0036144598338446}.
 
 \bibitem[Ghosh et~al.(2026)Ghosh, Bhattacharya, and Chakrabarti]{ghosh2026}
 Sayantari Ghosh, Saumik Bhattacharya, and Partha~Pratim Chakrabarti.

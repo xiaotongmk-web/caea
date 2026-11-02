@@ -11,6 +11,7 @@ import scipy
 from scipy.optimize import minimize
 from scipy.special import expit, logsumexp
 from scipy.stats import t as student_t
+from repair import repair_class_marginal
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -56,9 +57,7 @@ def policy(theta, p, s):
 def project(pi, tau, lam=1.):
     shape = pi.shape
     a = pi.reshape(shape[:-1]+(21,3))
-    m = a.sum(-1)
-    wanted = (1-lam)*m+lam*tau
-    return (wanted[...,None]*a/np.maximum(m[...,None],1e-300)).reshape(shape)
+    return repair_class_marginal(a, tau, lam).reshape(shape)
 
 def kl(p,q):
     return np.sum(p*(np.log(np.maximum(p,1e-300))-np.log(np.maximum(q,1e-300))),axis=-1)
@@ -146,11 +145,16 @@ def learned_experiments(seeds,ntrain,ntest):
         # The same noisy audit is shared across counterfactual stances for each x.
         phat=(rng.binomial(32,px)+.5)/33
         noisytau=target(np.repeat(phat,len(sg)))
+        noisy_audit=(noisytau[...,None]*np.array([.25,.5,.25])).reshape(-1,len(Q))
+        nearest=np.zeros_like(tau)
+        nearest[np.arange(len(p)),np.argmin((np.linspace(0,1,21)-p[:,None])**2,axis=1)]=1.
         dpo_m=dpo.reshape(ntest,len(sg),21,3).sum(-1)
         pooled=softmax(np.log(np.maximum(dpo_m,1e-300)).mean(axis=1))
         methods={'Reference':ref,'DPO':dpo,'SFT-chosen':policy(sh,p,s),
                  'Audit-only':audit,'CAEA-0.5':project(dpo,tau,.5),'CAEA-1':full,
                  'CAEA-noisy32':project(dpo,noisytau),
+                 'Audit-only-noisy32':noisy_audit,
+                 'Oracle-nearest':project(dpo,nearest),
                  'Pooled-marginal':project(dpo,np.repeat(pooled,len(sg),axis=0)),
                  'Uniform-coverage':project(dpo,np.full_like(tau,1/21))}
         for penalty in [.5,2.,8.]:

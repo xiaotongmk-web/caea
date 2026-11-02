@@ -5,7 +5,7 @@ adapter with the DPO pairwise likelihood. All transformer weights remain frozen.
 Scores only ten supplied, one-token answer options; no free-text quality claim.
 """
 from pathlib import Path
-import argparse,gc,json,time,urllib.request
+import argparse,gc,json,time,urllib.request,hashlib
 import numpy as np
 from scipy.optimize import minimize
 from scipy.special import expit,logsumexp
@@ -44,14 +44,26 @@ def make_records():
                                 preferred_style=preferred,prompt=prompt))
     return rec
 
-def encode(model_id,records,tag=''):
+def encode(model_id,records,tag='',refresh=False):
     short=model_id.split('/')[-1];cache=ROOT/'results'/f'neural_{short}{tag}.npz'
-    if cache.exists():
-        d=np.load(cache);return d['hidden'],d['base_logits'],d['candidate_mass'],json.loads(str(d['metadata']))
     revision=REVISIONS.get(model_id)
     if revision is None:
         with urllib.request.urlopen('https://huggingface.co/api/models/'+model_id,timeout=20) as r:
             revision=json.load(r)['sha']
+    fingerprint=hashlib.sha256(json.dumps([r['prompt'] for r in records],
+        ensure_ascii=False,separators=(',',':')).encode('utf-8')).hexdigest()
+    if cache.exists() and not refresh:
+        with np.load(cache) as d:
+            meta=json.loads(str(d['metadata']))
+            expected=(model_id,revision,fingerprint,len(records))
+            actual=(meta.get('model_id'),meta.get('revision'),meta.get('prompt_sha256'),meta.get('prompt_count'))
+            if actual != expected:
+                raise RuntimeError('Cache provenance mismatch or legacy unbound cache. '
+                    'Use --refresh-cache for fresh inference, or code/review_audit.py '
+                    'to replay archived predictions without claiming fresh inference.')
+            if d['hidden'].shape[0] != len(records) or d['base_logits'].shape != (len(records),10):
+                raise RuntimeError('Cache array shape mismatch')
+            return d['hidden'].copy(),d['base_logits'].copy(),d['candidate_mass'].copy(),meta
     tok=AutoTokenizer.from_pretrained(model_id,revision=revision)
     if tok.pad_token_id is None:tok.pad_token=tok.eos_token
     tok.padding_side='left'
@@ -71,7 +83,8 @@ def encode(model_id,records,tag=''):
         hs.append(h.numpy());ls.append(selected.numpy());masses.append(mass.numpy())
         if off%32==0:print(f'{short}: {min(off+4,len(records))}/{len(records)} prompts, {time.time()-start:.1f}s',flush=True)
     hidden=np.concatenate(hs);base=np.concatenate(ls);mass=np.concatenate(masses)
-    meta=dict(model_id=model_id,revision=revision,torch=torch.__version__,transformer_weights_updated=False,
+    meta=dict(model_id=model_id,revision=revision,prompt_sha256=fingerprint,cache_schema_version=2,
+              torch=torch.__version__,transformer_weights_updated=False,
               prompt_count=len(records),candidate_set_size=10,seconds=time.time()-start,
               mean_unrestricted_mass_on_option_letters=float(mass.mean()))
     np.savez_compressed(cache,hidden=hidden,base_logits=base,candidate_mass=mass,metadata=json.dumps(meta))
@@ -111,8 +124,8 @@ def pair_nll(feat,w,pairs,beta=.5):
     ctx,a,b,y=pairs;delta=beta*np.sum((w[a]-w[b])*feat[ctx],axis=-1)
     return float(np.mean(np.logaddexp(0,delta)-y*delta))
 
-def run_model(model_id,records):
-    h,base,mass,meta=encode(model_id,records)
+def run_model(model_id,records,refresh=False):
+    h,base,mass,meta=encode(model_id,records,refresh=refresh)
     train=np.array([i for i,r in enumerate(records) if r['split']=='train'])
     valid=np.array([i for i,r in enumerate(records) if r['split']=='validation'])
     test=np.array([i for i,r in enumerate(records) if r['split']=='test'])
@@ -155,14 +168,15 @@ def run_model(model_id,records):
     return rows,meta
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--models',nargs='+',default=MODELS);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--models',nargs='+',default=MODELS)
+    ap.add_argument('--refresh-cache',action='store_true');args=ap.parse_args()
     torch.set_num_threads(6);torch.set_num_interop_threads(1)
     records=make_records()
     with open(ROOT/'results/neural_prompts.jsonl','w')as f:
         for r in records:f.write(json.dumps(r)+'\n')
     allrows=[];metadata=[];start=time.time()
     for model_id in args.models:
-        rows,meta=run_model(model_id,records);allrows+=rows;metadata.append(meta)
+        rows,meta=run_model(model_id,records,refresh=args.refresh_cache);allrows+=rows;metadata.append(meta)
     write_csv(ROOT/'results/neural_per_seed.csv',allrows)
     (ROOT/'results/neural_status.json').write_text(json.dumps(dict(completed=True,seconds=time.time()-start,models=metadata,
         scope='Frozen transformer inference plus trained candidate decision-head DPO; not full transformer fine-tuning'),indent=2))

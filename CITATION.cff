@@ -2,9 +2,7 @@ cff-version: 1.2.0
 message: "If you use this artifact, cite the accompanying CAEA manuscript."
 title: "CAEA: Auditing and Repairing Preference-Induced Belief Feedback"
 type: software
-version: 0.1.0
-repository-code: "https://github.com/xiaotongmk-web/caea"
-date-released: 2026-11-02
+version: 0.2.0
 license: MIT
 authors:
   - family-names: Zhang
@@ -16,3 +14,5 @@ preferred-citation:
     - family-names: Zhang
       given-names: Xiaotong
   year: 2026
+
+repository-code: "https://github.com/xiaotongmk-web/caea"

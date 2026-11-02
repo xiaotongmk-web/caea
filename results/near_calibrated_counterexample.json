@@ -1,0 +1,17 @@
+{
+  "p": 0.2,
+  "d": 0.01,
+  "k": 5000.0,
+  "beta": 0.5,
+  "c": 2.0,
+  "eta": 0.25,
+  "rounds": 400,
+  "pooled_Brier": 0.16010000000000002,
+  "pooled_Brier_regret": 0.0001,
+  "central_multiplier": 1.25,
+  "final_beliefs": [
+    0.1904249597592274,
+    0.20957504024077264
+  ],
+  "interpretation": "Analytic construction with rescaled agreement pressure, not a human estimate"
+}

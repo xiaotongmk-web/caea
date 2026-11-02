@@ -1,5 +1,5 @@
 {
-  "projection_max_objective_gap": 2.589040093425865e-13,
+  "projection_max_objective_gap": 2.59015031645049e-13,
   "independent_solves": 20,
   "gaussian_counterexample": {
     "s": 1.0,

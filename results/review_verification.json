@@ -1,0 +1,108 @@
+{
+  "completed": true,
+  "fresh_neural_inference": false,
+  "archived_neural_replay_max_abs_error": 5.9072791991354734e-08,
+  "linear_risk_identity_max_abs_error": 4.163336342344337e-17,
+  "support_error_check": "passed",
+  "curvature_remainder": "H*h/2",
+  "bootstrap": "5000 paired crossed seed/context resamples; 24 contexts; 5 label seeds; exploratory",
+  "uncertainty_limits": "Conditions on fixed training/validation split, finite evidence grid and backbone; excludes fresh inference and training-context variation",
+  "comparisons": [
+    {
+      "model": "SmolLM2-135M-Instruct",
+      "condition": "original",
+      "metric": "risk",
+      "difference": "Head-DPO minus LM-base",
+      "mean": -0.016359880029415557,
+      "ci95_low": -0.036092471613062616,
+      "ci95_high": 0.0018166129694030394,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "SmolLM2-135M-Instruct",
+      "condition": "original",
+      "metric": "style_match",
+      "difference": "CAEA-1 minus Audit-only",
+      "mean": 0.14062605700535374,
+      "ci95_low": 0.08771134928530393,
+      "ci95_high": 0.19667854241322694,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "SmolLM2-135M-Instruct",
+      "condition": "permuted",
+      "metric": "risk",
+      "difference": "Head-DPO minus LM-base",
+      "mean": 0.016842833703380133,
+      "ci95_low": -0.029530648133222905,
+      "ci95_high": 0.07282857972896578,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "SmolLM2-135M-Instruct",
+      "condition": "permuted",
+      "metric": "style_match",
+      "difference": "CAEA-1 minus Audit-only",
+      "mean": -0.04691785378624939,
+      "ci95_low": -0.11913860891618229,
+      "ci95_high": 0.0247791368109368,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "Qwen2.5-0.5B-Instruct",
+      "condition": "original",
+      "metric": "risk",
+      "difference": "Head-DPO minus LM-base",
+      "mean": -0.03456526092183019,
+      "ci95_low": -0.052983057243409556,
+      "ci95_high": -0.017140728956254122,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "Qwen2.5-0.5B-Instruct",
+      "condition": "original",
+      "metric": "style_match",
+      "difference": "CAEA-1 minus Audit-only",
+      "mean": 0.1642708888275098,
+      "ci95_low": 0.09606490239016167,
+      "ci95_high": 0.23527299621417996,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "Qwen2.5-0.5B-Instruct",
+      "condition": "permuted",
+      "metric": "risk",
+      "difference": "Head-DPO minus LM-base",
+      "mean": 0.004688980989661754,
+      "ci95_low": -0.042412082347464394,
+      "ci95_high": 0.052642952544896655,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    },
+    {
+      "model": "Qwen2.5-0.5B-Instruct",
+      "condition": "permuted",
+      "metric": "style_match",
+      "difference": "CAEA-1 minus Audit-only",
+      "mean": -0.008447524825015644,
+      "ci95_low": -0.09099205439445679,
+      "ci95_high": 0.06638745444165434,
+      "evidence_clusters": 24,
+      "label_seeds": 5,
+      "bootstrap_replicates": 5000
+    }
+  ]
+}

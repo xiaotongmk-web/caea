@@ -37,7 +37,7 @@ retaining the preference policy within each content class. Classical KL
 projection quantifies the preference cost; coupling bounds relate repair
 strength to feedback contraction. Finite stance audits cannot certify
 global stability without additional regularity; a known curvature bound
-yields a finite-sample certificate. Ten-seed finite-action DPO experiments,
+yields a finite-sample certificate. An extension preserves this ambiguity at arbitrarily small report regret. Ten-seed finite-action DPO experiments,
 stochastic simulations, and two frozen-language-model candidate-selector
 pilots illustrate these results and their limits. Full repair and audit-only
 have identical forecast risk by construction. Soft-score reweighting can
@@ -92,7 +92,7 @@ optimization is universally harmful. We connect this observability gap to
 (ii) preference-cost accounting and contraction bounds for conditional
 repair, and (iii) a finite-audit impossibility result and a certificate
 conditional on supplied regularity. The KL projection itself is classical,
-and closest-KL anti-sycophancy correction is prior work. Our analysis asks
+and closest-KL anti-sycophancy correction is prior work. The coupling and finite-grid arguments use standard proof techniques; we claim their explicit audit-to-feedback connection rather than a new general projection or contraction principle. Our analysis asks
 what the audit observes, what intervention its target requires, and which
 feedback guarantee follows. Controlled training and simulations test the
 implementation and expose adverse baselines, auditor failure, and neural
@@ -131,7 +131,7 @@ agreement indiscriminately. Our evidence-fixed intervention changes a
 user's unsupported stated stance, while informative user input belongs in
 the evidence. Ghosh et al.\ investigate nonlinear belief dynamics under
 sycophantic feedback \citep{ghosh2026}. We focus on a response-policy
-construction with explicit audit equivalence and repair-budget calculations.
+construction with explicit audit equivalence and repair-budget calculations. Their attractor analysis already addresses nonlinear sycophantic feedback; the occurrence of separated stable beliefs alone is therefore not our novelty claim.
 
 \paragraph{Projection, scoring, and diversity.}
 The repair follows from the KL chain rule and information projection
@@ -139,7 +139,7 @@ The repair follows from the KL chain rule and information projection
 \citep{gneiting2007}. Output-diversity methods such as DivPO
 \citep{lanchantin2025} address a different property: a broad distribution of
 answers need not be well calibrated. We use standard statistical quantities
-to keep these distinctions explicit.
+to keep these distinctions explicit. Contraction of random iterations is classical \citep{diaconis1999}; the coupling below specializes that reasoning to a shared audit target.
 
 
 \section{Problem formulation}
@@ -178,7 +178,7 @@ is known, and the target is
 \end{equation}
 Here $T_E$ is a chosen exploration tolerance. Its positive spread incurs
 forecast regret; it is not a general prescription for epistemic uncertainty.
-Strong evidence can justify a concentrated target. Questions without an
+Strong evidence can justify a concentrated target. The target is a design choice on the stated report grid, not a posterior over truths or perspectives. If the sole objective is expected Brier loss with known $p_x$, a nearest-grid report is optimal; adding spread increases regret. Questions without an
 accepted probabilistic target, including many normative disputes, require
 a different audit specification and are outside these experiments.
 
@@ -195,6 +195,22 @@ Full repair ($\lambda=1$) replaces the epistemic marginal with the
 stance-independent target. Partial repair interpolates between this target
 and the preference marginal. Both preserve every positive-mass
 class-conditional response distribution exactly.
+
+
+\paragraph{Identities, not independent predictive evidence.}
+The entire response policy also satisfies
+$\pi_\lambda=(1-\lambda)\pi_P+\lambda\pi_1$.
+For fixed evaluation weights over $(x,s)$, linearity and homogeneity give
+\begin{align}
+ \mathcal R(\pi_\lambda)&=(1-\lambda)\mathcal R(\pi_P)+\lambda\mathcal R(\pi_1),\label{eq:riskidentity}\\
+ \TV(b_\lambda,\tau_x)&=(1-\lambda)\TV(m_P,\tau_x).\label{eq:tvidentity}
+\end{align}
+Thus, intermediate risk and target-TV improvements follow algebraically
+once the target is supplied. Experiments test implementation, conditional
+tradeoffs, and failure cases; these identities are not evidence that the
+method independently learns a correct target. Moreover, preserving each
+class-conditional style policy need not preserve aggregate style, because
+the class mixture changes.
 
 \begin{proposition}[KL projection and preference cost]
 \label{prop:projection}
@@ -262,6 +278,25 @@ does not certify a geometric rate. For $a=0$, no repair is needed for stability.
 \end{theorem}
 
 
+\begin{corollary}[The gap can persist near optimal forecast risk]
+\label{cor:smallrisk}
+Fix $p\in(0,1)$ and $0<d\le\min\{p,1-p\}$. Restrict reports to
+$q\in\{p-d,p+d\}$ and stances to $[p-d,p+d]$, with a uniform reference,
+reward $-k(q-s)^2$, and symmetric stance population about $p$.
+Set $c=2kd^2/\beta$. Pooling gives each report probability $1/2$ for every
+$k$ and every repair fraction, independent of $Z\sim\mathrm{Bernoulli}(p)$.
+Pooled Brier loss is $p(1-p)+d^2$ and regret is $d^2$.
+For the same mean-response update and uniform audit target, strict
+contraction holds if $(1-\lambda)c<1$, while the center is unstable and
+two stable fixed points exist if $(1-\lambda)c>1$.
+\end{corollary}
+The report regret can therefore be arbitrarily small while the normalized
+feedback regimes differ. Maintaining a fixed unstable $c$ as $d\to0$
+requires $k/\beta$ to grow as $d^{-2}$; absolute equilibrium separation is
+at most $2d$. This extension does not establish large real-world effects
+from small forecast errors at fixed agreement pressure.
+
+
 Thus, tests based only on the pooled one-turn joint law cannot distinguish
 the constructed feedback regimes. Conditioning on stance or retaining
 linked longitudinal observations restores information that pooling discards.
@@ -280,7 +315,7 @@ The simulations use the specified belief-update rule.}
 \end{figure}
 
 \section{Stability guarantees and audit requirements}
-Let $K_{x,s}$ be the preference policy's distribution over report values $q_c$.
+Let $K_{x,s}$ be the preference policy's distribution over report values $q_c$. In kernel formulas, $\tau_x$ denotes its report pushforward $\sum_c\tau_x(c)\delta_{q_c}$, not a distribution on response text.
 Assume a finite $L_x$ satisfies
 $W_1(K_{x,u},K_{x,v})\le L_x|u-v|$, where $W_1$ is Wasserstein distance on
 $[0,1]$. The same $\lambda_x$ must be used across non-evidential stances.
@@ -361,7 +396,7 @@ arbitrarily close to one. Thus, exact agreement with an invariant target on
 finitely many stances cannot by itself certify global feedback stability.
 
 Conversely, let $m\in C^2([0,1])$ satisfy a known global
-curvature bound $|m''(s)|\le H$. Audit a uniform grid of $J\ge2$ points, spacing
+curvature bound $|m''(s)|\le H$. Audit a uniform grid $s_j=(j-1)/(J-1)$ of $J\ge2$ points, spacing
 $h=1/(J-1)$, with $n$ independent binary responses per point. Let
 $\widehat m_j$ be the empirical means and
 $\epsilon=\sqrt{\log(2J/\delta)/(2n)}$ for $0<\delta<1$.
@@ -369,7 +404,7 @@ With probability at least $1-\delta$,
 \begin{equation}
  \sup_s|m'(s)|\le\widehat L_H:=
  \max_j\frac{|\widehat m_{j+1}-\widehat m_j|}{h}
-       +\frac{2\epsilon}{h}+Hh.
+       +\frac{2\epsilon}{h}+Hh/2.
  \label{eq:gridcertificate}
 \end{equation}
 This can be inserted into Equation~\eqref{eq:rho} for binary reports, where
@@ -377,20 +412,20 @@ the kernel $W_1$ distance equals the difference of response probabilities.
 \end{proposition}
 
 The $2\epsilon/h$ term penalizes overly fine grids at fixed observations per
-point; $Hh$ penalizes overly coarse grids. For total report budget $N\simeq Jn$,
+point; $Hh/2$ penalizes overly coarse grids. For total report budget $N\simeq Jn$,
 balancing the two errors gives $h$ of order $N^{-1/5}$ up to logarithms when
 $H>0$ is fixed. A trustworthy curvature bound is additional information:
 estimating it from the same unconstrained finite grid does not evade the first
 part of the proposition. The certificate consequently trades sampling precision against coverage
-under a supplied regularity assumption.
+under a supplied regularity assumption. It is pointwise in evidence context $x$; simultaneous certification of $M$ prespecified contexts requires, for example, a union bound using $\delta/M$. It does not certify an unrestricted set of unseen contexts.
 
 \section{Measuring report quality and belief dispersion}
 We use three complementary quantities based on standard variance,
 total-variation, and proper-scoring constructions. They describe different
 objects: simulated belief dispersion, audited class coverage, and forecast
-error. Their names do not imply validated measures of human cognition.
+error. The legacy BPD/PCD/ECR field names are retained for data compatibility, not introduced as validated cognitive metrics. We use ordinary dispersion, target mismatch, and regret in the interpretation.
 
-\paragraph{Belief Polarization Drift (BPD).}
+\paragraph{Excess belief dispersion (legacy output field: BPD).}
 For a common evidence context and matched initial user population, let
 $V_T^\pi(x)=\Var(U_T^\pi\mid x)$ and let $\widetilde\pi$ use the trusted,
 stance-independent target with the same update rule and sampling convention.
@@ -405,7 +440,7 @@ error must also be reported. For stochastic updates, subtract the oracle's
 nonzero sampling variance; raw change from initial variance is also retained
 in the released results.
 
-\paragraph{Perspective Coverage Degradation (PCD).}
+\paragraph{Conditional target mismatch (legacy difference field: PCD).}
 Define $d_\pi(x,s)=\TV(m_\pi(\cdot\mid x,s),\tau_x)$ and
 $\mathrm{PCD}=\E[d_\pi-d_{\pi_0}]$. Also report absolute $\E[d_\pi]$.
 Here ``perspective coverage'' is operationalized only as forecast-class
@@ -415,7 +450,7 @@ mass across unsupported answers can worsen this quantity. Conditioning on
 $(x,s)$ is essential; pooling first can erase the signal in
 Theorem~\ref{thm:blindness}.
 
-\paragraph{Epistemic Calibration Regression (ECR).}
+\paragraph{Brier regret and change from reference (legacy field: ECR).}
 For $Z\mid x\sim\operatorname{Bernoulli}(p_x)$ and a report sampled independently
 of the realized $Z$ conditional on $x$,
 \begin{equation}
@@ -446,8 +481,8 @@ The reward is
 \end{equation}
 with $k=4$ and $\beta=0.5$ in the main setting. Pair labels follow
 Bradley--Terry probabilities $\sig(r(y_a)-r(y_b))$. Candidate proposals are a
-50:50 mixture of reference and uniform response sampling. We fit the
-DPO pairwise likelihood using L-BFGS-B in the log-linear policy
+50:50 mixture of reference and uniform response sampling. The six supplied features contain the simulator reward exactly, up to a context-only constant: the ideal coefficient vector is $(0,-(1+k),2,2k,0.8,0.25)/\beta$. This is a well-specified low-dimensional learning test with direct access to $p$, not a test of learning evidence from text. We fit the DPO
+pairwise likelihood using L-BFGS-B in the log-linear policy
 $\pi_\theta\propto\pi_0\exp(\theta^\top\phi)$ with
 $\phi=(q,q^2,qp,qs,z(2s-1),z(2s-1)(2q-1))$.
 SFT-chosen maximizes the conditional likelihood of the same pairs' chosen
@@ -459,8 +494,7 @@ Ten seeds yield 54,000 context--stance evaluations. The auditor target uses
 Equation~\eqref{eq:target} with $T_E=0.01$. Audit-only uses this same target and
 the reference style prior; CAEA uses the learned DPO class-conditionals.
 Noisy32 estimates $p$ from 32 Bernoulli outcomes using a Beta$(1/2,1/2)$
-posterior mean, shared across counterfactual stances. Pooled-marginal repair
-geometrically averages the DPO class marginals over the nine stances and
+posterior mean, shared across counterfactual stances. Audit-only-noisy32 uses the identical noisy target and reference style prior, equalizing target information with CAEA-noisy32. Oracle-nearest uses the known $p$ to select a closest grid report and retains the DPO conditional; it optimizes report risk rather than the prescribed spread target. Pooled-marginal repair geometrically averages the DPO class marginals over the nine stances and
 retains DPO within-class distributions. Uniform-coverage sets all forecast
 classes equally likely. Soft-score baselines reweight DPO by
 $\exp[-v(q-p)^2/\beta]$ for $v\in\{0.5,2,8\}$; all settings are reported,
@@ -487,9 +521,8 @@ Table~\ref{tab:main} shows full repair decreasing report regret from 0.04707 to
 comparison therefore isolates conditional preference retention rather
 than independent recovery of the evidence target. CAEA retains positive style reward and costs less
 KL than replacing the within-class distribution with the reference style
-prior (1.04799 versus 1.25375). Half repair gives intermediate report regret
-0.02591 and KL 0.27976. Noisy32 increases regret to 0.00962, making the cost
-of auditor uncertainty visible. Uniform forecast coverage has regret 0.16905:
+prior (1.04799 versus 1.25375). Half repair
+gives intermediate report regret 0.02591 and KL 0.27976, with its regret and TV exactly determined by Equations~\eqref{eq:riskidentity}--\eqref{eq:tvidentity}. Noisy32 increases regret to 0.00962, exactly the same as Audit-only-noisy32. Oracle-nearest obtains regret 0.000206 at KL 2.68510, below the spread target's 0.00474 but with target TV 0.71858. This confirms that exact target matching is not Brier-risk optimality. Because the noisy target is shared over stances, its estimation error does not itself break full-repair stance invariance or the $1-\eta$ contraction; it changes the target-driven belief law and accuracy. Uniform forecast coverage has regret 0.16905:
 more spread is not inherently epistemically better. Soft-score-8 has lower KL
 than half repair and lower regret, but it does not match the audited marginal.
 Matching a specified marginal and minimizing forecast risk under a KL
@@ -545,12 +578,12 @@ Separately from estimating the target, we sample the binary response kernel
 $m(s)=\sig(4(2s-1))$, whose known curvature bound is
 $H=2(4)^2/(3\sqrt3)$. For each total response budget
 $N\in\{1024,4096,16384,65536,262144\}$, the grid size is planned from
-$J\in\{5,9,17,33,65\}$ by minimizing $2\epsilon/h+Hh$ before observing
+$J\in\{5,9,17,33,65\}$ by minimizing $2\epsilon/h+Hh/2$ before observing
 the audit samples. Five hundred independent binomial audit replicates per
 budget are retained. With $\delta=0.05$ and contraction margin $\gamma=0.1$,
 every realized certificate exceeds the true $L=2$ in these runs. The mean
-sufficient repair fraction falls from 0.78046 to 0.68649 across the budget
-range, versus 0.55 when $L$ is known exactly. A separate smooth bump
+sufficient repair fraction changes from 0.72965 to 0.62763 at the endpoints of the budget
+range, versus 0.55 when $L$ is known exactly. The mean is not monotone at every intermediate budget because discrete grid changes also change the observed maximum secant slope; minimizing the remainder alone need not minimize the full realized certificate. A separate smooth bump
 construction passes all nine grid-point audits exactly while having stable
 off-grid beliefs at 0.13 and 0.87, with variance 0.1369.
 
@@ -660,13 +693,13 @@ interpretations. We do not offer a validated safeguard against these risks.
 The experiments use generated data and public pretrained models, without
 human participants or collected personal conversations.
 
-\section*{Reproducibility}
+\section*{Reproducibility and tool use}
 The accompanying research package contains experiment code, per-seed outputs,
 model revision hashes, prompts, fitted decision-head parameters, and figure
-generation scripts. Reported empirical values come from executed code.
+generation scripts. The revised finite-action, pressure, stochastic, and finite-audit results were regenerated. The frozen-neural results were replayed from archived hidden states and logits, not obtained by fresh backbone inference during this revision. The replay includes paired uncertainty estimates and checks against recorded outputs.
 Computational checks do not replace independent validation of mathematical
 arguments or empirical assumptions. No human-participant study was conducted.
-Reproduction details and numerical checks appear in Appendix~\ref{app:repro}.
+Generative AI tools assisted mathematical formalization, proof drafting, experimental design, code, analysis, figures, and writing. This statement describes tool use rather than assigning authorship; the named author remains responsible for the submitted work. Reproduction details and numerical checks appear in Appendix~\ref{app:repro}.
 
 \bibliography{references}
 \bibliographystyle{tmlr}
@@ -720,6 +753,24 @@ $g'(d)<0$, so $0\le F'_\lambda(s)<1$ there. The negative root has the
 same derivative. The central point is unstable. Solving the strict
 contraction inequality proves the stated infimum, with the boundary
 qualification.\qed
+
+
+\subsection{Proof of Corollary~\ref{cor:smallrisk}}
+The upper-report probability is $\sig(4kd(s-p)/\beta)$.
+Symmetry about $p$ and $\sig(v)+\sig(-v)=1$ imply a uniform
+pooled report law, which is independent of the stipulated outcome.
+The Brier identity $\E(Q-Z)^2=p(1-p)+\E(Q-p)^2$ gives the loss.
+With $v=(s-p)/d$, the repaired mean-response map becomes
+\[
+ v'=(1-\eta)v+\eta(1-\lambda)\tanh(cv),\qquad v\in[-1,1].
+\]
+Its maximum derivative is $1-\eta+\eta(1-\lambda)c$, at zero.
+When $(1-\lambda)c>1$, the function
+$(1-\lambda)\tanh(cv)-v$ has positive derivative at zero,
+is negative at $v=1$, and is strictly concave on $(0,1]$.
+It has one positive root with negative derivative, and by odd symmetry
+one negative root; both have update derivative in $[0,1)$.
+The center is unstable. These facts prove both regimes.\qed
 
 \subsection{Proof of Theorem~\ref{thm:stability}}
 Couple the two repaired report kernels by first using a shared Bernoulli
@@ -791,12 +842,16 @@ $r(1,s)-r(0,s)=\beta\log[m(s)/(1-m(s))]$, a bounded smooth reward difference.
 
 For the certificate, Hoeffding's inequality and a union bound give
 $\max_j|\widehat m_j-m(s_j)|\le\epsilon$ with probability at least
-$1-\delta$. The true secant slope on an interval differs from its empirical
-secant by at most $2\epsilon/h$. By the mean value theorem, it equals
-$m'(\xi)$ at some point in the interval. The curvature bound implies
-$|m'(s)-m'(\xi)|\le Hh$ for every point of that interval. Taking the maximum
-over intervals proves Equation~\eqref{eq:gridcertificate}. For binary
-reports $W_1(\operatorname{Bern}(a),\operatorname{Bern}(b))=|a-b|$.
+$1-\delta$. The true secant slope on an interval differs from its empirical secant by
+at most $2\epsilon/h$. On an interval $[a,b]$ of length $h$, let
+$D=h^{-1}\int_a^b m'(t)\,dt$. For every $s\in[a,b]$,
+\[
+ |m'(s)-D|\le\frac{H}{h}\int_a^b|s-t|\,dt
+ =\frac{H((s-a)^2+(b-s)^2)}{2h}\le\frac{Hh}{2}.
+\]
+Taking absolute values and the maximum over intervals proves
+Equation~\eqref{eq:gridcertificate}. For binary
+reports,\[W_1(\operatorname{Bern}(a),\operatorname{Bern}(b))=|a-b|.\]
 With $n\simeq Nh$, the sampling term is of order
 $\sqrt{\log(J/\delta)/(Nh^3)}$; balancing against $Hh$ yields the stated
 order, ignoring logarithms.\qed
@@ -834,8 +889,7 @@ Twenty separate 12-response, four-class constrained problems were solved
 with SLSQP independently of the closed-form repair. The largest difference
 between the numerical and analytic objective values was
 $2.59\times10^{-13}$. This checks the projection implementation rather than
-its applicability to natural language. Confidence intervals in the main table are computed over independent
-synthetic runs; they do not describe uncertainty across all possible
+its applicability to natural language. The added \texttt{code/review\_audit.py} independently replays archived neural scores and exports per-prompt metrics, crossed context/seed bootstrap intervals, and numerical identity checks. Inference caches now require matching model revision and prompt fingerprints; legacy unbound caches are reserved for explicit archival replay. Empty target-supported response classes raise an error instead of silently losing mass. Confidence intervals in the main table are computed over independent synthetic runs; they do not describe uncertainty across all possible
 preference distributions or human populations.
 
 \end{document}

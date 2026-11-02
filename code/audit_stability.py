@@ -24,12 +24,12 @@ def main():
         for J in [5,9,17,33,65]:
             n=budget//J;h=1/(J-1)
             eps=np.sqrt(np.log(2*J/delta)/(2*n))
-            planners.append((2*eps/h+H*h,J,n,h,eps))
+            planners.append((2*eps/h+H*h/2,J,n,h,eps))
         _,J,n,h,eps=min(planners) # planned without using sampled audit data
         x=np.linspace(0,1,J);mu=expit(a*(2*x-1))
         for rep in range(500):
             empirical=rng.binomial(n,mu)/n
-            cert=float(np.max(np.abs(np.diff(empirical)))/h+2*eps/h+H*h)
+            cert=float(np.max(np.abs(np.diff(empirical)))/h+2*eps/h+H*h/2)
             lam=float(max(0,1-(1-gamma)/cert))
             rows.append(dict(total_budget=budget,J=J,n_per_point=n,used_samples=J*n,
                 repetition=rep,delta=delta,gamma=gamma,H=H,true_L=Ltrue,

@@ -51,3 +51,32 @@ With a correct, permutation-consistent class map and sufficient candidate
 support, full repair enforces the specified class marginal even when the
 input scores change. It does not remove position shortcuts within a class,
 validate the class map, or guarantee unchanged aggregate style performance.
+
+
+\paragraph{Paired evidence-context uncertainty.}
+To avoid treating two stances from one evidence context as independent,
+we replay the archived hidden states and fitted heads, average paired
+differences within each of 24 test contexts, and independently resample
+the five label seeds and 24 context clusters (5,000 crossed bootstrap
+replicates). Table~\ref{tab:paired} reports exploratory percentile intervals,
+conditional on the fixed training/validation split, backbone, and finite
+evidence grid. These do not cover training-context variation. For SmolLM2,
+the original-bank report-regret difference already has an interval spanning
+zero; for Qwen it is negative on the original bank. Both permutation-control
+intervals span zero. Full repair's positive style advantage on the original
+bank is not established after permutation. These results narrow the evidence
+for transfer rather than repairing the failed selector. This revision
+replays archived inference and does not claim a fresh model run. Maximum
+absolute deviation from recorded summary values is $5.91\times10^{-8}$,
+consistent with replay roundoff in the archived float32 PCA features.
+
+\begin{table}[t]
+\centering\small
+\caption{Exploratory paired uncertainty over contexts and label seeds.
+Report difference is Head-DPO minus LM-base (negative is better);
+style difference is CAEA-1 minus Audit-only (positive is better).
+Intervals are percentile bootstrap intervals, not the seed-only
+Student-$t$ half-widths in Table~\ref{tab:neural}.}
+\label{tab:paired}
+\resizebox{\linewidth}{!}{\input{table_review_uncertainty.tex}}
+\end{table}

@@ -1,0 +1,197 @@
+[
+  {
+    "path": "results/audit.csv",
+    "bytes": 808,
+    "sha256": "1554838525ec0f5474415d0a1998bdf9f0283ea3c22f25df353de86c56c434c6"
+  },
+  {
+    "path": "results/audit_indistinguishability.json",
+    "bytes": 409,
+    "sha256": "15566f60db5887f9032ce8d225053dfa781d189fa7b42f513043ba98d1ddc067"
+  },
+  {
+    "path": "results/audit_stability.csv",
+    "bytes": 333321,
+    "sha256": "1cd4c1d7554e3c3897b162639fc25f39cc8b64129e3bde68d9c07142735e3b49"
+  },
+  {
+    "path": "results/audit_stability_status.json",
+    "bytes": 1578,
+    "sha256": "1d0482f974fdda54171f1bb43e663ae83dc00a4b4ee0601d3a522d0bfd90979d"
+  },
+  {
+    "path": "results/audit_stability_summary.csv",
+    "bytes": 362,
+    "sha256": "4a34829ab7e3438781ed408f58111e9eefd14b16835326b2b977143494b664c8"
+  },
+  {
+    "path": "results/config.json",
+    "bytes": 383,
+    "sha256": "2c650d377831dd3e80cb9eb9475e85b9fbf9e0a4743793d2b91b39299790ea89"
+  },
+  {
+    "path": "results/fits.json",
+    "bytes": 7499,
+    "sha256": "30470404a1760736c2ff2435057c511006d789231ac1022ae67b9b951a649f96"
+  },
+  {
+    "path": "results/learned_per_seed.csv",
+    "bytes": 24447,
+    "sha256": "2731d6acb70f30bf893e45b62e8d907c531770a58c1ec118b64658a6eebf18d8"
+  },
+  {
+    "path": "results/learned_summary.csv",
+    "bytes": 4998,
+    "sha256": "d770a59c013787b2a411555cee9bf4e6e3c349c61257bf235088f6365b721809"
+  },
+  {
+    "path": "results/near_calibrated_counterexample.json",
+    "bytes": 378,
+    "sha256": "2d6faef45ec879cb90fa699698054ad04594922ac1ed7f32277fb8d9d2df5b8e"
+  },
+  {
+    "path": "results/neural_Qwen2.5-0.5B-Instruct.npz",
+    "bytes": 513347,
+    "sha256": "d9c1d1bc446a56d0178136e3982f3425a90758c26711a3de49b33d9830dccd43"
+  },
+  {
+    "path": "results/neural_Qwen2.5-0.5B-Instruct_permuted.npz",
+    "bytes": 162986,
+    "sha256": "097298d7ef45e2e20c9e03413f51c19da346d563abf6b755770dab9b386d2738"
+  },
+  {
+    "path": "results/neural_SmolLM2-135M-Instruct.npz",
+    "bytes": 331713,
+    "sha256": "017b1c8250d598e5ec9aa36901ac017e74666f29e759f735b738238fbb726dc7"
+  },
+  {
+    "path": "results/neural_SmolLM2-135M-Instruct_permuted.npz",
+    "bytes": 105703,
+    "sha256": "d417f8750708975cc91f6e41df4da6267173673738b3fdbbaf69f8c47e45bcbb"
+  },
+  {
+    "path": "results/neural_aggregate.json",
+    "bytes": 3750,
+    "sha256": "e56153cc21bfbd648def0dbb999c4ca4c07bba0253e496f8ea04a2c9392fbf45"
+  },
+  {
+    "path": "results/neural_fit_Qwen2.5-0.5B-Instruct.json",
+    "bytes": 30027,
+    "sha256": "7ffbba481f6295ec38f839bf69c8d0669ccf86fdbd527b6d565fbcd1218d4980"
+  },
+  {
+    "path": "results/neural_fit_SmolLM2-135M-Instruct.json",
+    "bytes": 30074,
+    "sha256": "3e5d62a759b7100a0d21ba6a727f39840028238590ec3546095aa5935b25660a"
+  },
+  {
+    "path": "results/neural_label_control.csv",
+    "bytes": 3175,
+    "sha256": "78392de7443ac7365cf4908b2fe269c8871b215cb494912e3b70ca3b09c28d37"
+  },
+  {
+    "path": "results/neural_label_control_metadata.json",
+    "bytes": 688,
+    "sha256": "ad8baaf8639bb6a2015e98e3f455bead31985b52a30b0ebaa6d1b85a066ae49d"
+  },
+  {
+    "path": "results/neural_per_seed.csv",
+    "bytes": 8471,
+    "sha256": "8f064a070baaf9b2648f5a4ec2f0927d52e3a013aed056188ad83e0dc579e36e"
+  },
+  {
+    "path": "results/neural_permuted_prompts.jsonl",
+    "bytes": 33815,
+    "sha256": "edcc1d68eb49a1326e4d8a5fdd9d204638d6faa7d0dedf9d9f6a6952e9fa6fbe"
+  },
+  {
+    "path": "results/neural_prompts.jsonl",
+    "bytes": 98809,
+    "sha256": "9b1132898f34d13960614875fcdd00f143792c47c7c1d89c1817177d2bdc36af"
+  },
+  {
+    "path": "results/neural_status.json",
+    "bytes": 918,
+    "sha256": "3d160c59ac0bcd2c5b5b52c8b406f7a15e1bb0e3afafadf215a87950510a8891"
+  },
+  {
+    "path": "results/neural_summary_Qwen2.5-0.5B-Instruct.csv",
+    "bytes": 4152,
+    "sha256": "d0ed28fb849d1fa0234ef75157d075251034229370e05ed03e3ca91547f9301c"
+  },
+  {
+    "path": "results/neural_summary_SmolLM2-135M-Instruct.csv",
+    "bytes": 4418,
+    "sha256": "4ae5939642f26171618d94f9a30ed144e0caeaa0c5893a8fbd6103f632a45cc2"
+  },
+  {
+    "path": "results/neural_transform_Qwen2.5-0.5B-Instruct.npz",
+    "bytes": 57469,
+    "sha256": "fe8604354852eb231ad0b98ed19d7fda37cace88ea862321aec77ae7f9ed0fbd"
+  },
+  {
+    "path": "results/neural_transform_SmolLM2-135M-Instruct.npz",
+    "bytes": 37161,
+    "sha256": "0c82220074cad0aa207a5342d067fb4d70d520c49af649510f1acc6b0bc6f3d3"
+  },
+  {
+    "path": "results/phase.csv",
+    "bytes": 8174,
+    "sha256": "3c87b21fa81f895cf43c7f770c81993acd0343b16b31e43e96b45487db24801b"
+  },
+  {
+    "path": "results/phase_surface.npz",
+    "bytes": 33207,
+    "sha256": "e622f733924864ca447842f3ad5c4a2a53c56f8394a92f8b6fb89cb463caae9d"
+  },
+  {
+    "path": "results/review_cluster_intervals.csv",
+    "bytes": 1203,
+    "sha256": "fbd949f8dc1967db7006b1914c596d85abb2de99789b01d17791098955641cc7"
+  },
+  {
+    "path": "results/review_prompt_metrics.csv",
+    "bytes": 417279,
+    "sha256": "d89c62ac9351f1da41f59f6b8db2fdb80eb6225924c2db35b834a06183cabdac"
+  },
+  {
+    "path": "results/review_verification.json",
+    "bytes": 3464,
+    "sha256": "f8fd4f637188ee1ad6ecb8361412e239a6572e44c831df95f7b03ac5d75f02a5"
+  },
+  {
+    "path": "results/run_status.json",
+    "bytes": 640,
+    "sha256": "58f1de091c6c0a4b1dbabe8ead7ac4d9ef9ecc3a9cc3af0909a60496af0a81f6"
+  },
+  {
+    "path": "results/semantic_failure.csv",
+    "bytes": 300,
+    "sha256": "f508a68db80d135f02f3e6dcf983510b033e1a9cbed99e2d9961cfb9bf17e572"
+  },
+  {
+    "path": "results/sensitivity.csv",
+    "bytes": 36278,
+    "sha256": "a0e719b4c248ce1f187238464ab5160f65bb1adfe74a7b33fcfb290f1e7e40cc"
+  },
+  {
+    "path": "results/stochastic.csv",
+    "bytes": 14707,
+    "sha256": "753477f8203b787e655ba36cdabd171d42898ef42f53f8ba17427d07c97eb795"
+  },
+  {
+    "path": "results/stress_status.json",
+    "bytes": 56,
+    "sha256": "341a3ac83bcbdb004cd1528ea9941e4a70ba6b1f9ef7f96d17eebf43fe01c2b8"
+  },
+  {
+    "path": "results/verification.json",
+    "bytes": 529,
+    "sha256": "3c2ac6e8031a910f827685dd7b3e281b097163eb3676b85fb44ae3ff512f649b"
+  },
+  {
+    "path": "results/wrong_auditor.csv",
+    "bytes": 667,
+    "sha256": "c336feeccd0415aafab11e787782b5912221b77bfa27497593fa2df4f717cd93"
+  }
+]

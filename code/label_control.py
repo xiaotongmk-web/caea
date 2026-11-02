@@ -1,11 +1,12 @@
 """Held-out answer-bank permutation audit. Does not retrain or select models."""
-import json,time
+import json,time,argparse
 import numpy as np
 import torch
 from experiment import ROOT,softmax,write_csv
 from neural_probe import encode,QV,STYLE,MODELS
 
 def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--refresh-cache',action='store_true');args=ap.parse_args()
     torch.set_num_threads(6);torch.set_num_interop_threads(1)
     original=[json.loads(x) for x in (ROOT/'results/neural_prompts.jsonl').read_text().splitlines()]
     test=[r for r in original if r['split']=='test']
@@ -22,7 +23,7 @@ def main():
     tau=softmax(-(np.linspace(0,1,5)[None,:]-p[:,None])**2/.03)
     rows=[];metas=[]
     for model in MODELS:
-        h,base,mass,meta=encode(model,records,tag='_permuted');metas.append(meta)
+        h,base,mass,meta=encode(model,records,tag='_permuted',refresh=args.refresh_cache);metas.append(meta)
         short=model.split('/')[-1];trans=np.load(ROOT/'results'/f'neural_transform_{short}.npz')
         f=np.column_stack([np.ones(len(h)),(h-trans['mean'])@trans['basis']/trans['scale']])
         fits=json.loads((ROOT/'results'/f'neural_fit_{short}.json').read_text())['fits']
