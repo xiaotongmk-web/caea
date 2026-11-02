@@ -1,0 +1,42 @@
+name: Expanded frozen-model study
+on:
+  push:
+    branches: [scale-upgrade-run]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        model: [qwen15, smol17, qwen7]
+        shard: [0, 1, 2, 3]
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned inference dependencies
+        run: python -m pip install --only-binary=llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu -r requirements-core.txt -r requirements-scale.txt
+      - name: Fetch and verify public model weights
+        run: python code/scale_models.py --models ${{ matrix.model }} --directory /tmp/caea-model-weights
+      - name: Execute fixed, disjoint evidence shard
+        run: python code/scale_study.py infer --model ${{ matrix.model }} --weights /tmp/caea-model-weights --cache /tmp/caea-scale-cache --threads 4 --shard-count 4 --shard-index ${{ matrix.shard }}
+      - name: Preserve small inference outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scale-${{ matrix.model }}-${{ matrix.shard }}
+          path: |
+            results/scale/predictions_*_shard_*.jsonl.gz
+            results/scale/model_*_shard_*.json
+          retention-days: 1
+          if-no-files-found: error

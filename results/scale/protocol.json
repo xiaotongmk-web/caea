@@ -1,0 +1,53 @@
+{
+  "version": "scale-v1",
+  "created_utc": "2026-11-02T06:47:40Z",
+  "seed": 2026110217,
+  "train_evidence_cases": 256,
+  "validation_evidence_cases": 64,
+  "test_evidence_cases": 128,
+  "selector_models": [
+    "qwen15",
+    "smol17",
+    "qwen7"
+  ],
+  "common_auditor": "qwen15",
+  "quantization": "Q4_K_M",
+  "conditions": [
+    "base",
+    "permuted",
+    "paraphrase",
+    "new_evidence"
+  ],
+  "unsupported_stances": [
+    0.1,
+    0.9
+  ],
+  "calibration": "2-parameter logistic calibration of the mean report from two permuted evidence-only queries",
+  "calibration_regularization_grid": [
+    0.0,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "calibration_selection": "validation Brier regret only",
+  "target_temperature": 0.03,
+  "partial_fractions": [
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "soft_score_penalties": [
+    0.5,
+    2.0,
+    8.0
+  ],
+  "primary_descriptive_comparison": "CAEA-0.5-calibrated minus LM-base report regret on base condition",
+  "uncertainty": "paired evidence-context bootstrap, 5000 replicates; exploratory; calibration split held fixed",
+  "design_scope": "controlled Bayesian response banks, frozen quantized inference; no transformer training or human study",
+  "planned_auditor_requests": 1152,
+  "planned_selector_requests_per_model": 1024,
+  "external_preregistration": false,
+  "cases_sha256": "f9d047948b6a920d9ca8b10a8864199a2b6dc85da6fecb6c001cbc949eefdafc",
+  "requests_sha256": "b41d249b40df94a618c369591ae47464c323e3b53e89f927e94d06a366e7b2ae"
+}
