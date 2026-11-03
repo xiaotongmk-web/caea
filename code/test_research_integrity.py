@@ -1,5 +1,5 @@
 """Tests for scientific leakage and corrupted/resumed GPU archives (no Torch)."""
-import copy, json, tempfile, unittest
+import copy, hashlib, json, tempfile, unittest
 from pathlib import Path
 from evidence_audit_diagnostics import solve_public_evidence
 from gpu_io import validate_rows, read_validated_cache
@@ -39,6 +39,41 @@ class GPUPreparationTests(unittest.TestCase):
             protocol.write_text(json.dumps(changed))
             with self.assertRaises(AssertionError):
                 prepare(out)
+
+
+class LocalWeightTests(unittest.TestCase):
+    def test_verified_weights_and_corruption(self):
+        from gpu_weights import verify_local_weights
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            entries = []
+            for name, data in [('config.json', b'{}'), ('tokenizer_config.json', b'{}'),
+                               ('model.safetensors', b'example tensor bytes')]:
+                (root/name).write_bytes(data)
+                entry = dict(rfilename=name)
+                if name.endswith('.safetensors'):
+                    entry['lfs'] = dict(size=len(data), sha256=hashlib.sha256(data).hexdigest())
+                else:
+                    entry['blobId'] = hashlib.sha1(f'blob {len(data)}\0'.encode()+data).hexdigest()
+                entries.append(entry)
+            manifest = root/'verified_download.json'
+            manifest.write_text(json.dumps(dict(model_key='test', repo='test/repo',
+                                                revision='pinned', entries=entries)))
+            _, hashes = verify_local_weights(root, 'test', 'test/repo', 'pinned')
+            self.assertEqual(set(hashes), {'model.safetensors'})
+            with self.assertRaises(ValueError):
+                verify_local_weights(root, 'test', 'test/repo', 'different revision')
+            for name in ['model.safetensors', 'config.json']:
+                original = (root/name).read_bytes()
+                (root/name).write_bytes(bytes([original[0]^1])+original[1:])
+                with self.assertRaises(ValueError):
+                    verify_local_weights(root, 'test', 'test/repo', 'pinned')
+                (root/name).write_bytes(original)
+            altered = json.loads(manifest.read_text())
+            altered['entries'] = entries[:-1]
+            manifest.write_text(json.dumps(altered))
+            with self.assertRaises(ValueError):
+                verify_local_weights(root, 'test', 'test/repo', 'pinned')
 
 
 class GPUArchiveTests(unittest.TestCase):

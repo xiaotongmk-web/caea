@@ -63,28 +63,32 @@ def verify(out,keys):
  result=dict(completed=True,records=records,scope='Archive consistency, not independent authentication of GPU execution')
  st.write_json(out/'verification.json',result);print(json.dumps(result))
 
-def infer(key,out,weights,limit=None):
+def infer(key,out,weights,limit=None,local_weights=False):
  import torch,transformers
  from transformers import AutoTokenizer,AutoModelForCausalLM
  from huggingface_hub import snapshot_download,HfApi
  if not torch.cuda.is_available():raise RuntimeError('CUDA GPU required; CPU fallback is intentionally disabled')
  if not torch.cuda.is_bf16_supported():raise RuntimeError('The selected GPU does not support BF16')
  repo,rev=SPECS[key];weights.mkdir(parents=True,exist_ok=True)
- path=Path(snapshot_download(repo,revision=rev,local_dir=weights/key,
-  allow_patterns=['*.json','*.safetensors','*.jinja','tokenizer.model','vocab.*','merges.txt']))
- info=HfApi().model_info(repo,revision=rev,files_metadata=True);hashes={}
- for f in info.siblings:
-  if not f.rfilename.endswith('.safetensors'):continue
-  h=hashlib.sha256()
-  with (path/f.rfilename).open('rb')as stream:
-   for b in iter(lambda:stream.read(16*1024*1024),b''):h.update(b)
-  actual=h.hexdigest();expected=f.lfs.sha256 if f.lfs is not None else None
-  if expected is None or actual!=expected:raise RuntimeError('Unverified upstream tensor file: '+f.rfilename)
-  hashes[f.rfilename]=actual
+ if local_weights:
+  from gpu_weights import verify_local_weights
+  path,hashes=verify_local_weights(weights/key,key,repo,rev)
+ else:
+  path=Path(snapshot_download(repo,revision=rev,local_dir=weights/key,
+   allow_patterns=['*.json','*.safetensors','*.jinja','tokenizer.model','vocab.*','merges.txt']))
+  info=HfApi().model_info(repo,revision=rev,files_metadata=True);hashes={}
+  for f in info.siblings:
+   if not f.rfilename.endswith('.safetensors'):continue
+   h=hashlib.sha256()
+   with (path/f.rfilename).open('rb')as stream:
+    for b in iter(lambda:stream.read(16*1024*1024),b''):h.update(b)
+   actual=h.hexdigest();expected=f.lfs.sha256 if f.lfs is not None else None
+   if expected is None or actual!=expected:raise RuntimeError('Unverified upstream tensor file: '+f.rfilename)
+   hashes[f.rfilename]=actual
  torch.manual_seed(1739);torch.backends.cuda.matmul.allow_tf32=False
- tokenizer=AutoTokenizer.from_pretrained(path,trust_remote_code=False)
+ tokenizer=AutoTokenizer.from_pretrained(path,trust_remote_code=False,local_files_only=local_weights)
  model=AutoModelForCausalLM.from_pretrained(path,torch_dtype=torch.bfloat16,device_map={'':0},
-  trust_remote_code=False,attn_implementation='eager').eval()
+  trust_remote_code=False,attn_implementation='eager',local_files_only=local_weights).eval()
  for dataset in ['scale','external_math']:
   dest=out/dataset;p=json.loads((dest/'protocol.json').read_text());requests=st.load_rows(dest/'requests.jsonl.gz')
   if st.digest(requests)!=p['requests_sha256']:raise ValueError('Requests differ from the fixed protocol')
@@ -129,7 +133,7 @@ def infer(key,out,weights,limit=None):
  print('Completed BF16 scoring for',key,flush=True)
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('command',choices=['prepare','preflight','infer','verify','analyse']);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--weights',type=Path);ap.add_argument('--model',choices=SPECS,default='qwen7');ap.add_argument('--limit',type=int);ap.add_argument('--minimum-free-gb',type=float,default=35);a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('command',choices=['prepare','preflight','infer','verify','analyse']);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--weights',type=Path);ap.add_argument('--model',choices=SPECS,default='qwen7');ap.add_argument('--limit',type=int);ap.add_argument('--minimum-free-gb',type=float,default=35);ap.add_argument('--local-weights',action='store_true');a=ap.parse_args()
  if a.limit is not None and a.limit<1:ap.error('--limit must be positive')
  if a.command=='prepare':prepare(a.out)
  elif a.command=='preflight':
@@ -137,7 +141,7 @@ def main():
   preflight(a.weights,a.minimum_free_gb)
  elif a.command=='infer':
   if a.weights is None:ap.error('--weights is required')
-  infer(a.model,a.out,a.weights,a.limit)
+  infer(a.model,a.out,a.weights,a.limit,a.local_weights)
  elif a.command=='verify':verify(a.out,list(SPECS))
  else:
   verify(a.out,list(SPECS))
