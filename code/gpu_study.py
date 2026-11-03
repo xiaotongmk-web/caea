@@ -18,7 +18,7 @@ def prepare(out):
   src=st.ROOT/'results'/dataset;dest=out/dataset;dest.mkdir(parents=True,exist_ok=True)
   parent=json.loads((src/'protocol.json').read_text());p=dict(parent)
   p.update(version='bf16-replication-v1',parent_protocol_sha256=st.digest(parent),quantization=None,
-   weight_dtype='bfloat16',runtime='transformers/PyTorch CUDA',model_revisions=SPECS,
+   weight_dtype='bfloat16',runtime='transformers/PyTorch CUDA',model_revisions={k:list(v) for k,v in SPECS.items()},
    preparation_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),additional_independent_test_cases=0,
    precision_interpretation='HF/BF16 versus GGUF/Q4 pipeline robustness; runtime/template/base-revision differences can also contribute')
   if (dest/'protocol.json').exists():

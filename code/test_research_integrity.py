@@ -23,6 +23,24 @@ class PublicEvidenceTests(unittest.TestCase):
             solve_public_evidence('Unstructured question without the documented grammar')
 
 
+class GPUPreparationTests(unittest.TestCase):
+    def test_repeat_prepare_preserves_protocol_and_rejects_changes(self):
+        import contextlib, io
+        from gpu_study import prepare
+        with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()):
+            out = Path(d)
+            prepare(out)
+            protocol = out/'scale'/'protocol.json'
+            original = protocol.read_bytes()
+            prepare(out)
+            self.assertEqual(protocol.read_bytes(), original)
+            changed = json.loads(original)
+            changed['weight_dtype'] = 'float32'
+            protocol.write_text(json.dumps(changed))
+            with self.assertRaises(AssertionError):
+                prepare(out)
+
+
 class GPUArchiveTests(unittest.TestCase):
     def setUp(self):
         self.requests = [dict(id='audit:x', kind='audit', prompt_sha256='a'*64)]
