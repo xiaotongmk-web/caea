@@ -1,0 +1,9 @@
+{
+  "root": "/root/autodl-tmp",
+  "assets": [
+    {"role": "base_model", "path": "REPLACE_WITH_EXISTING_MODEL_DIRECTORY"},
+    {"role": "stance_dpo_adapter", "path": "REPLACE_WITH_EXISTING_STANCE_ADAPTER_DIRECTORY"},
+    {"role": "evidence_dpo_adapter", "path": "REPLACE_WITH_EXISTING_EVIDENCE_ADAPTER_DIRECTORY"},
+    {"role": "training_log", "path": "REPLACE_WITH_EXISTING_TRAINING_LOG"}
+  ]
+}
