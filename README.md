@@ -10,6 +10,18 @@ heads. Version 0.3 adds 4,672 unique fresh study requests on three frozen
 official Q4_K_M checkpoints up to 7.61B parameters, with a separately
 calibrated common auditor and an exploratory external correctness task. There is no full-model post-training, free-text evaluation or human study.
 
+## Existing SeetaCloud experiments and unified workflow
+
+The owner reports completed Stance-DPO, Evidence-DPO, three-seed training and
+counterfactual evidence-flip experiments on SeetaCloud RTX 5090. Their latest
+server artifacts have not yet been reconciled with this repository. Historical
+GPU-pending statements below describe the older release, not current server status.
+See the [read-only repository audit](docs/REPOSITORY_AUDIT_2026-11-05.md),
+[offline experiment entry point](experiments/README.md), and
+[next-stage protocol proposal](docs/NEXT_EXPERIMENTS_zh.md).
+Use existing local models and the working server environment; the legacy GPU
+installer below is not the entry point for that environment.
+
 ## Main finding
 
 Pooling over stance can hide feedback sensitivity. A binary construction has
@@ -231,3 +243,4 @@ or model weights. TMLR style licensing is in `paper/THIRD_PARTY_NOTICE.md`; the
 IJCAI 2027 style files are unchanged official files. The public paper reports
 substantial generative-AI assistance in formalization, proofs, experiments,
 analysis and writing; the named human author remains responsible for the work.
+
