@@ -10,6 +10,14 @@ heads. Version 0.3 adds 4,672 unique fresh study requests on three frozen
 official Q4_K_M checkpoints up to 7.61B parameters, with a separately
 calibrated common auditor and an exploratory external correctness task. There is no full-model post-training, free-text evaluation or human study.
 
+## CPU reproducibility and next experiment implementation
+
+See [the method and reproducibility review](docs/CPU_REPRODUCIBILITY_AND_NEXT_STAGE.md)
+for isolated CPU checks and an executable evidence/stance factorial generator.
+The owner's latest SeetaCloud DPO results are not yet reconciled with this
+repository. Historical GPU-pending statements below describe the older artifact,
+not the current server. Preserve its working environment and local models.
+
 ## Main finding
 
 Pooling over stance can hide feedback sensitivity. A binary construction has
@@ -231,3 +239,4 @@ or model weights. TMLR style licensing is in `paper/THIRD_PARTY_NOTICE.md`; the
 IJCAI 2027 style files are unchanged official files. The public paper reports
 substantial generative-AI assistance in formalization, proofs, experiments,
 analysis and writing; the named human author remains responsible for the work.
+
