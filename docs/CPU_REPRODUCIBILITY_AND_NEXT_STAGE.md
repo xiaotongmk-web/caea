@@ -1,64 +1,15 @@
-# CAEA 方法、复现检查与下一阶段实现
+# CAEA CPU 复现与下一阶段实现
 
-审查基线：main `917a2dd5f9ff813fb2969af978913687d2a945d8`，2026-11-05。
-独立分支 `research/cpu-replay-evidence-grid`；此前 PR #1 尚未合并，本 PR 不依赖它。
-SeetaCloud 上最新 DPO 数据尚未同步，不将仓库冻结模型实验冒充服务器的新训练结果。
+当前公开论文在 [paper/CAEA.pdf](../paper/CAEA.pdf)。此分支额外提供一个隔离的 CPU 验证入口和数据协议生成器。
 
-## 方法与已有证据
-
-论文 `paper/main.tex` 将偏好策略按报告类别 c 分解。给定原类别边缘 m 和审计目标 τ，
-部分修复边缘 b=(1−λ)m+λτ，修复策略 π'(y)=b(c(y))π(y|c(y))。
-这是 KL 最近投影，保留类内分布；实现位于 `code/repair.py`。
-偏好目标代价为 β KL(b||m)。正目标质量不能赋给原策略没有支持的类，代码显式拒绝。
-完全修复与同目标 audit-only 的报告风险相同是恒等关系，不构成两个独立成功实验。
-
-理论贡献是：池化的一轮质量不识别反馈稳定性；立场条件化审查能揭示不同反馈机制。
-收缩结论依赖明确更新模型，有限网格全局保证还依赖外供曲率；不推出人类获益。
-
-| 层级 | 入口 | 现有证据与限制 |
-| --- | --- | --- |
-| 有限动作 DPO/反馈模拟 | experiment.py、stress.py、audit_stability.py | 10 个合成种子、63 响应、14 方法；并非 LLM 全量后训练 |
-| 冻结神经候选头 | neural_probe.py、label_control.py、review_audit.py | 训练候选头、5 标签种子；置换后未建立稳健 DPO 增益 |
-| 扩展冻结模型 | scale_study.py、external_study.py | Q4 三骨干；128 Bayesian 测试源情境、32 外部题；共 4672 已归档推理请求 |
-| 审计器诊断 | evidence_audit_diagnostics.py | 旧数据重放；校准 LM 审计器仍逊于公开证据公式，合理更新明显受抑制 |
-| 旧 GPU 复核 | gpu_study.py、gpu/run_autodl.sh | 仓库中的 BF16 路径；不可据此推断服务器 DPO 状态 |
-
-code/ 存研究与绘图入口，results/ 存协议/预测/分析，paper/ 与 submission/ 存论文。
-旧 GPU 脚本默认安装 cu118 与允许下载，不应覆盖现有 5090 的正常环境。
-
-## 实际 CPU 检查
-
-本机 Python 3.12，NumPy 2.3.5、SciPy 1.17.0、Matplotlib 3.10.8，与 core requirements 匹配。
-从 GitHub 读取文件并对关键归档输入核对 Git blob SHA-1；未下载大模型、未运行新推理或训练。
-
-| 检查 | 结果 |
-| --- | --- |
-| verify_results.py | 通过 |
-| review_audit.py | 通过，归档神经重放最大绝对误差约 1.11e−16 |
-| verify_external.py | 通过，32 源问题、448 既有请求及校准器迁移检查 |
-| test_research_integrity.py | 6 项通过（CPU） |
-| evidence_audit_diagnostics.py | 通过，校准目标 base regret 0.082877，公式目标 0.014656 |
-| scale_study.py analyse → verify_scale.py | 从已核对的原生预测重建指标后通过，4224 既有请求、128 测试情境 |
-
-访问限制：连接器未返回 2.8 MB 的 `results/scale/per_prompt_metrics.csv.gz` 内容，
-故首次直接验证缺失该输入而失败。上述 scale 成功指从原生预测**重算后**的一致性检查，
-不声称已逐字节验证 GitHub 中该指标归档。另一未返回文件 neural_label_control_metadata.json
-未参与这些检查；它的独立认证未完成。不得把传输缺失描述成仓库损坏。
-
-部分验证脚本会写固定 results 路径；因此本 PR 新增 `tools/check_reproducibility.py`：
-复制 code/results 到临时目录，运行六个固定 CPU 检查，保存每项日志、输入哈希、依赖版本与退出码，
-检查源目录哈希前后相同。报告路径必须在仓库外且不存在，不覆盖任何旧实验。
-环境离线开关避免 Hugging Face 网络访问，但这不是操作系统网络沙箱。
-它只检查归档一致性，不能认证当年的训练或推理实际发生，也不验证数学证明。
+`tools/check_reproducibility.py` 将 code/results 复制到临时目录，运行已归档的 CPU 检查，并保存日志、输入哈希、依赖版本和退出码。工具检查源目录在运行前后的哈希。输出目录须位于仓库外且尚不存在。
 
 ```bash
-cd /root/autodl-tmp/你的仓库目录
-# 使用已有兼容环境，不运行旧 GPU 安装器
-python tools/check_reproducibility.py --out /root/autodl-tmp/caea-repro-唯一ID
+python tools/check_reproducibility.py --out /path/to/new-caea-replay
+python -m unittest discover -s tests -v
 ```
 
-需要完整 Git checkout 的 results（包括二进制归档）。非零退出时查看 report.json 与对应日志，
-不要在真实旧结果目录运行 analyse 来“修复”检查。若要重算，另建副本并记录这是派生输出。
+回放使用已归档结果。已记录的请求、模型参数和模拟之间的区别见仓库首页。新实验优先级见[后续验证计划](../RESEARCH_PLAN_zh.md)。
 
 ## 下一阶段已实现的数据协议
 

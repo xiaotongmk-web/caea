@@ -1,0 +1,13 @@
+{
+  "archived_predictions": {
+    "scale": 4224,
+    "external_math": 448
+  },
+  "fresh_inference": false,
+  "archived_calibrator_fit_verified": true,
+  "calibrator_refit_sensitivity_replicates": 750,
+  "bootstrap": "Paired evidence-context resampling, fixed model, calibrator and design",
+  "exploratory": true,
+  "per_prompt_metrics": 24192,
+  "comparisons": 162
+}
