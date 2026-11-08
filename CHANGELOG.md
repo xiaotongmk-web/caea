@@ -1,3 +1,13 @@
+# Public revision 0.4.0 — 2026-11-08
+
+- Updated the public manuscript and citation metadata.
+- Added an exact sampled-kernel contraction coefficient and the distinction between
+  deterministic equilibria and stationary distributions.
+- Added a finite-grid decision simulation that can certify, refute, or abstain.
+- Added signed stance contrasts, the deterministic 0.5 baseline, and 750
+  calibration-refit resamples. Reused the original archive for the reanalysis.
+- Added recent reference benchmarks and clarified the scope of comparability.
+
 # Unreleased continuation - 2026-11-02
 
 - Added a public-evidence Bayes solver as a task-specific, label-free

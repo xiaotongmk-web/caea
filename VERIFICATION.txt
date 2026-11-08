@@ -1,1 +1,1 @@
-PASS: completed runs, finite-audit certificates, exact audit comparison, stochastic noise floor, independent optimization, disjoint neural evidence splits, honest neural scope
+PASS: completed runs, finite-audit certificates, exact audit comparison, stochastic noise floor, independent optimization, disjoint neural evidence splits, honest neural scope, two-sided audits, and replay checks

@@ -5,6 +5,11 @@
     "sha256": "1554838525ec0f5474415d0a1998bdf9f0283ea3c22f25df353de86c56c434c6"
   },
   {
+    "path": "results/audit_decision_demo.csv",
+    "bytes": 260,
+    "sha256": "0bc9e3fcb53a865394af3ada93e4403631cd7c3bc5e1bdd9aaf183eea1281d6d"
+  },
+  {
     "path": "results/audit_indistinguishability.json",
     "bytes": 409,
     "sha256": "15566f60db5887f9032ce8d225053dfa781d189fa7b42f513043ba98d1ddc067"
@@ -25,9 +30,24 @@
     "sha256": "4a34829ab7e3438781ed408f58111e9eefd14b16835326b2b977143494b664c8"
   },
   {
+    "path": "results/calibration_refit_intervals.csv",
+    "bytes": 418,
+    "sha256": "bbebef4f94fc63c7e5fbdb72d84e27509dec9c748c314e5f52aa76ff747b0ec8"
+  },
+  {
     "path": "results/config.json",
     "bytes": 383,
     "sha256": "2c650d377831dd3e80cb9eb9475e85b9fbf9e0a4743793d2b91b39299790ea89"
+  },
+  {
+    "path": "results/evidence_replay_intervals.csv",
+    "bytes": 17948,
+    "sha256": "c278dbf0c69712b4257359cfb40333020da4beeb1526cce5eee2d6992c37de85"
+  },
+  {
+    "path": "results/evidence_replay_status.json",
+    "bytes": 367,
+    "sha256": "a4a297e659f7180ee4ea409412ec56520cc1f40eb8f54113b3c428baf33d8c46"
   },
   {
     "path": "results/fits.json",
@@ -146,18 +166,18 @@
   },
   {
     "path": "results/review_cluster_intervals.csv",
-    "bytes": 1203,
-    "sha256": "fbd949f8dc1967db7006b1914c596d85abb2de99789b01d17791098955641cc7"
+    "bytes": 1185,
+    "sha256": "07f47a384f0296dbc6bc61423a61980a998edefe830bac1910c8561ee982d389"
   },
   {
     "path": "results/review_prompt_metrics.csv",
-    "bytes": 417279,
-    "sha256": "d89c62ac9351f1da41f59f6b8db2fdb80eb6225924c2db35b834a06183cabdac"
+    "bytes": 411636,
+    "sha256": "98e71d802e8e673120675fa246ac463a6c5e763c06058de79ba64de0c5073288"
   },
   {
     "path": "results/review_verification.json",
-    "bytes": 3464,
-    "sha256": "f8fd4f637188ee1ad6ecb8361412e239a6572e44c831df95f7b03ac5d75f02a5"
+    "bytes": 3455,
+    "sha256": "864b51c3a2ecd097aae2e352bca08d1bdc831d90457e7b5934e1e15c01840ea5"
   },
   {
     "path": "results/run_status.json",

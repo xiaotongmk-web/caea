@@ -11,3 +11,5 @@ __pycache__/
 /paper/main.pdf
 /gpu-results/
 /gpu-weights/
+
+/results/evidence_replay_per_prompt.csv

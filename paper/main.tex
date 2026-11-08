@@ -4,7 +4,7 @@
 \usepackage{microtype,amsmath,amssymb,amsthm,booktabs,graphicx,array}
 \usepackage[colorlinks=true,allcolors=blue]{hyperref}
 \usepackage{url}
-\hypersetup{pdftitle={CAEA: Auditing and Repairing Preference-Induced Belief Feedback},pdfauthor={Xiaotong Zhang}}
+\hypersetup{pdftitle={When Pooled Evaluations Hide Belief Feedback: Observability and Conditional Repair},pdfauthor={Xiaotong Zhang}}
 
 \usepackage{enumitem}
 \setlist{nosep,leftmargin=*}
@@ -16,32 +16,31 @@
 \newcommand{\TV}{\operatorname{TV}}
 \newcommand{\Var}{\operatorname{Var}}
 \newcommand{\sig}{\operatorname{sigmoid}}
-\title{CAEA: Auditing and Repairing Preference-Induced Belief Feedback}
-\author{\name Xiaotong Zhang\\
-\addr China University of Petroleum (East China)\\
-Qingdao, China}
+\title{When Pooled Evaluations Hide Belief Feedback\\[2pt]Observability and Conditional Repair}
+\author{\name Xiaotong Zhang}
 
 \date{}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Pooled one-turn audits can hide feedback instability. We construct policies
-with identical pooled response--outcome laws but different mean-response
-stability, including an arbitrarily-small-regret extension. Conflict-aware
-epistemic alignment (CAEA) repairs an externally audited content marginal
-while retaining within-class policy. Classical KL projection accounts for
-preference cost; coupling bounds relate repair to contraction, and a finite
-audit certificate requires supplied curvature. Controlled DPO and stochastic
-simulations are complemented by 4,672 unique fresh scoring requests on three
-frozen 1.5B--7B checkpoints, with 256/64/128 Bayesian training/validation/test
-cases and 32 external correctness probes. A separately calibrated auditor
-uses no test labels. Constant-target, answer-order, informative-evidence and
-auditor-refit controls distinguish target quality from algebraic repair
-identities. The learned audit does not establish an advantage over simple
-shrinkage and strongly attenuates informative updates. The contribution is
-an audit-to-feedback analysis and reproducible failure study, without
-claims of full-model post-training or human benefit.
+An audit that retains only the joint distribution of forecasts and outcomes
+can miss how forecasts respond to a user's stated belief. In a binary
+model, two policies with identical pooled forecasts and outcomes yield
+different mean-response dynamics: one contracts and the other has two
+stable equilibria. This ambiguity persists at arbitrarily low forecast
+regret. For sampled reports, we give the exact one-step Wasserstein
+coefficient in the binary model and show that an expansive coefficient
+can coexist with a unique stationary law.
+Paired stance interventions recover information lost by pooling. With a
+curvature bound, finitely many samples can certify contraction; without
+that bound, a sufficiently steep observed secant can still rule it out.
+We study a class-marginal repair and replay archived candidate scores from
+three frozen models. The calibrated repair removes the measured stance
+gap by construction, but its response to new evidence is about 3\% of
+the analytic posterior change. These results separate three audit
+questions: forecast accuracy, sensitivity to unsupported stances, and
+responsiveness to new evidence.
 \end{abstract}
 
 
@@ -144,6 +143,17 @@ to keep these distinctions explicit. Contraction of random iterations is classic
 SYCON evaluates multi-turn free-form sycophancy \citep{hong2025}; our finite
 answer banks do not substitute for that setting. External probes below are
 a transformed GSM8K subset \citep{cobbe2021}, not standard solve accuracy.
+
+Recent complementary evaluations include SycoBench-600, which separates
+resistance to social pressure from acceptance of correct suggestions
+\citep{sinha2026sycobench}; Big-Big-SycoBench, which contrasts valid and
+invalid arguments in evaluative tasks without a definitive ground truth
+\citep{ballon2026big}; and BayesBench, which traces rational evidence
+accumulation over multiple turns \citep{samanta2026bayesbench}.
+Shapira et al.\ also distinguish assertion weight from useful in-context
+updating \citep{shapiraUpdating2026}. These protocols measure response
+behavior under evidence and pressure. Our question concerns the information
+lost when those conditioning variables and temporal links are discarded.
 
 \section{Problem formulation}
 Let $x$ denote shared admissible evidence and $s\in[0,1]$ a user's stated
@@ -288,6 +298,20 @@ does not certify a geometric rate. For $a=0$, no repair is needed for stability.
 \end{theorem}
 
 
+The observed variables in the pooled audit are $(Z,Q)$ for a fixed
+evidence context. The result applies when the audit omits the stated
+stance, pairing information, and longitudinal linkage. A paired design
+that records $Q$ at $1/2-h$ and $1/2+h$ on the same evidence retains the
+central secant
+\[
+  \frac{f_\lambda(1/2+h)-f_\lambda(1/2-h)}{2h}
+  =\frac{(1-\lambda)\tanh(ah)}{2h}.
+\]
+This converges to $(1-\lambda)a/2$ as $h\downarrow0$. It is a local
+diagnostic. A small observed secant alone cannot bound sensitivity away
+from the audited stances. Throughout the interaction the assistant policy
+is fixed and the user's state changes.
+
 \begin{corollary}[The gap can persist near optimal forecast risk]
 \label{cor:smallrisk}
 Fix $p\in(0,1)$ and $0<d\le\min\{p,1-p\}$. Restrict reports to
@@ -307,12 +331,22 @@ at most $2d$. This extension does not establish large real-world effects
 from small forecast errors at fixed agreement pressure.
 
 
-Thus, tests based only on the pooled one-turn joint law cannot distinguish
-the constructed feedback regimes. Conditioning on stance or retaining
-linked longitudinal observations restores information that pooling discards.
-The threshold characterizes this mean-response model; it is not an estimated
-threshold for human interaction. The assistant policy is fixed throughout
-the interaction rather than retrained after each round.
+Exact symmetry is sufficient, and near symmetry gives a quantitative
+version of the same limitation. Let $\mu$ be the stance law and $\mu^*$
+its reflection about $1/2$. Write $P_\mu$ for the pooled response--outcome
+law and $P_{\mathrm{sym}}$ for the law under any symmetric stance
+distribution. Then
+\[
+ \TV(P_\mu,P_{\mathrm{sym}})
+ \le \frac{(1-\lambda)a}{4} W_1(\mu,\mu^*).
+\]
+Indeed, $f_\lambda(1-s)=1-f_\lambda(s)$, so twice the deviation of the
+pooled upper-report probability from $1/2$ is the difference of the
+expectations of $f_\lambda$ under $\mu$ and $\mu^*$. Its Lipschitz
+constant is $(1-\lambda)a/2$. Independence of the outcome reduces the
+joint total variation to that of the binary report marginal. The bound
+controls what the pooled audit observes; the response map governing
+feedback is fixed independently of the audit population.
 
 \begin{figure}[t]
 \centering\includegraphics[width=.96\linewidth]{figures/phase.pdf}
@@ -357,6 +391,28 @@ evidence, its belief law and the ideal target-driven law can be coupled so that
 \end{equation}
 With a constant error bound, this is at most
 $\epsilon[1-(1-\eta)^T]$.
+\paragraph{Exact binary coefficient and stationarity.}
+In Theorem~\ref{thm:blindness}, the sampled transition from $s$ is the
+law of $(1-\eta)s+\eta Q$ with $Q\sim\operatorname{Bernoulli}(f_\lambda(s))$.
+For $u<v$, monotonicity of $f_\lambda$ allows the same uniform random
+number to produce ordered reports and ordered next states. The expected
+difference is then both the cost of this coupling and a lower bound on
+the cost of every coupling, by the difference in means. The exact
+one-step Wasserstein Lipschitz coefficient is therefore
+$1-\eta+\eta(1-\lambda)a/2$.
+This coefficient characterizes one-step contraction on $[0,1]$. For
+example, when $\eta=1$, the state is in $\{0,1\}$ after the first
+update. For finite $a$, the two-state transition matrix on that set
+is positive and symmetric, with unique stationary law
+$\operatorname{Bernoulli}(1/2)$. Thus, for $(1-\lambda)a>2$, an
+expansive one-step coefficient on $[0,1]$ and two stable deterministic
+fixed points coexist with a unique stationary law for this sampled process.
+At $\eta=1$ the probability of staying in the same endpoint is
+$(1-\lambda)\sig(a)+\lambda/2$. With a symmetric initial state
+distribution and no repair, $a=0$ and $a=4$ give the same marginal
+at each round but persistence probabilities of $0.5$ and approximately
+$0.982$, respectively. This contrast is an analytic illustration of
+what retaining linked observations reveals.
 \end{theorem}
 
 If $L_x$ is known, a desired margin $\gamma\in(0,1)$ is obtained by choosing
@@ -428,6 +484,24 @@ $H>0$ is fixed. A trustworthy curvature bound is additional information:
 estimating it from the same unconstrained finite grid does not evade the first
 part of the proposition. The certificate consequently trades sampling precision against coverage
 under a supplied regularity assumption. It is pointwise in evidence context $x$; simultaneous certification of $M$ prespecified contexts requires, for example, a union bound using $\delta/M$. It does not certify an unrestricted set of unseen contexts.
+
+\paragraph{A witness against contraction.}
+On the same simultaneous confidence event used in
+Proposition~\ref{prop:finiteaudit}, define the lower bound on the largest
+signed secant
+\[
+ \widehat L_-=\max_j\frac{\widehat m_{j+1}-\widehat m_j}{h}
+             -\frac{2\epsilon}{h}.
+\]
+For a constant stance-independent target and repair fraction $\lambda$,
+if $(1-\lambda)\widehat L_->1$, some pair of audited stances has an
+expected next-state gap larger than its input gap. The sampled kernel
+therefore cannot be globally one-step contractive in $W_1$, since $W_1$
+bounds the difference of means. The same pair rules out strict
+contraction of the deterministic mean-response map. This direction uses
+the sampling bound but does not need a curvature assumption. If the
+upper-bound test and this lower-bound test both fail, the audit is
+inconclusive. Neither test alone identifies the number of stationary laws.
 
 \section{Measuring report quality and belief dispersion}
 We use three complementary quantities based on standard variance,
@@ -614,6 +688,14 @@ baselines that CAEA does not uniformly dominate. Right: class-audit sample
 error and its conservative expectation bound.}
 \end{figure}
 
+A separate binomial simulation applies both decision rules to 11 grid
+points, with 20,000 draws per point and 500 repetitions per setting.
+All repetitions certify contraction for $(a,\lambda)=(1,0)$ and
+$(4,0.75)$, reject contraction for $(4,0)$, and remain inconclusive
+at the two threshold settings $(2,0)$ and $(4,0.5)$.
+These simulations use the supplied logistic curvature bound for
+certification. The rejection rule only uses the observed secants.
+
 \subsection{Frozen-backbone candidate selection}
 \label{sec:neural}
 \input{neural_section.tex}
@@ -622,6 +704,62 @@ error and its conservative expectation bound.}
 \label{sec:scale}
 \input{scale_section.tex}
 
+
+\subsection{Does an estimated audit retain evidence responsiveness?}
+\label{sec:nonoracle}
+We replay archived logits from three frozen Q4 candidate selectors
+(1.5B and 7B Qwen2.5, 1.7B SmolLM2). A common Qwen2.5-1.5B auditor
+uses evidence-only queries and averages two answer orders. A two-parameter
+logistic recalibration was fitted and selected on separate Bayesian contexts
+(256 train, 64 validation). We evaluate on 128 Bayesian test contexts and
+32 GSM8K-derived correctness judgments \citep{cobbe2021} with the calibrator transferred
+unchanged. This external task judges proposed answers under unsupported
+stance pressure. It does not measure GSM8K solve accuracy.
+
+The calibrated repair has Bayesian forecast regret 0.08288, compared
+with 0.08397 for a temperature-matched audit centered on the training
+mean. The paired difference is $-0.00109$ with 95\% bootstrap interval
+$[-0.00289,0.00071]$ conditional on the fitted calibrator. A deterministic
+0.5 report has regret 0.07142 on the same task. The calibrated repair
+is worse than this baseline by 0.01146, with interval
+$[0.00962,0.01326]$. On the external task, the calibrated repair and the
+temperature-matched baseline have regrets 0.27846 and 0.26255.
+The interval for their difference is $[-0.02207,0.05531]$.
+
+At fixed evidence, the mean absolute gap between the two audited stances
+is 0.03420 for the 1.5B Qwen base, 0.08160 for 7B Qwen, and 0.02005 for
+SmolLM2. The signed high-minus-low differences are $-0.02254$,
+$0.07722$, and $0.00947$, respectively. Thus the contrast points
+away from the stated stance in the first model and toward it in the
+other two. Half repair halves the gaps and full repair sets them to zero
+by construction. These are two-stance contrasts, not estimates of a
+global sensitivity bound. Table~\ref{tab:updatereplay} separates this
+contrast from the response to new evidence. Full repair moves the
+mean report by 0.00867 on average in absolute value, versus 0.03686
+for the raw auditor and 0.29313 for the exact posterior.
+Its mean absolute update error is lower by 0.00169 relative to zero update,
+with a signed-difference interval of $[-0.00360,0.00018]$ for the fixed calibrator.
+The oracle centered on the same candidate grid retains 0.28835 of
+absolute update. The grid can therefore represent updates of the
+relevant magnitude in this task.
+A task-specific solver that parses the likelihoods from the supplied
+evidence and applies Bayes' rule attains regret 0.01466 with the same
+report grid and temperature. It requires the controlled evidence
+format, and serves as a diagnostic of the auditor rather than an
+open-domain baseline.
+
+The fitted logistic slope is about 0.248, compressing differences in
+auditor log-odds. Since the fit used static forecast error, we assess
+its response to new evidence separately. In 750 additional resamples
+that repeat fitting and selection on the training and validation splits
+and resample the test contexts, the update-error interval relative to
+zero update is $[-0.00845,0.00007]$. The refitted risk interval relative
+to the temperature-matched training-mean baseline is
+$[-0.00436,0.01102]$ on the Bayesian task and
+$[-0.02940,0.11692]$ on the external task. The refitted Bayesian
+interval relative to the deterministic 0.5 report is $[0.00863,0.02322]$.
+These exploratory intervals condition on the archived model outputs.
+Appendix~\ref{app:archived} defines the comparators and resampling.
 
 \section{Discussion and limitations}
 The findings distinguish three questions that a single score cannot answer:
@@ -715,14 +853,14 @@ human participants or collected personal conversations.
 \section*{Reproducibility and tool use}
 The accompanying research package contains experiment code, per-seed outputs,
 model revision hashes, prompts, fitted decision-head parameters, and figure
-generation scripts. The finite-action, pressure, stochastic, and finite-audit results were regenerated. The original small head-DPO pilot was replayed from archived arrays with paired uncertainty checks. Separately, the expanded study executes 4,672 unique fresh requests on three official, SHA-256-verified Q4\_K\_M checkpoints. The protocol was fixed locally before inference, without external preregistration; later controls and the external extension are explicitly exploratory. Native logits, candidate mass, prompt hashes, model revisions and execution metadata are archived. No model weights are redistributed.
+generation scripts. The finite-action, pressure, stochastic, and finite-audit results were regenerated. The original small head-DPO pilot was replayed from archived arrays with paired uncertainty checks. Separately, the expanded study executes 4,672 unique fresh requests on three official, SHA-256-verified Q4\_K\_M checkpoints. The protocol was fixed locally before inference, without external preregistration; later controls and the external extension are explicitly exploratory. Native logits, candidate mass, prompt hashes, model revisions and execution metadata are archived. No model weights are redistributed. The present revision replays these archived outputs and adds sensitivity analyses without a new inference run.
 Computational checks do not replace independent validation of mathematical
 arguments or empirical assumptions. No human-participant study was conducted.
-Generative AI tools assisted mathematical formalization, proof drafting, experimental design, code, analysis, figures, and writing. This statement describes tool use rather than assigning authorship; the named author remains responsible for the submitted work. Reproduction details and numerical checks appear in Appendix~\ref{app:repro}.
+Generative AI tools assisted mathematical formalization, proof drafting, experimental design, code, analysis, figures, and writing. This statement describes tool use rather than assigning authorship; the named author remains responsible for this manuscript. Reproduction details and numerical checks appear in Appendix~\ref{app:repro}.
 
 \bibliography{references}
 \bibliographystyle{tmlr}
-\clearpage
+\par\medskip
 \appendix
 \section{Proofs}\label{app:proofs}
 \subsection{Proof of Proposition~\ref{prop:projection}}
@@ -910,5 +1048,52 @@ between the numerical and analytic objective values was
 $2.59\times10^{-13}$. This checks the projection implementation rather than
 its applicability to natural language. The added \texttt{code/review\_audit.py} independently replays archived neural scores and exports per-prompt metrics, crossed context/seed bootstrap intervals, and numerical identity checks. Inference caches now require matching model revision and prompt fingerprints; legacy unbound caches are reserved for explicit archival replay. Empty target-supported response classes raise an error instead of silently losing mass. Confidence intervals in the main table are computed over independent synthetic runs; they do not describe uncertainty across all possible
 preference distributions or human populations.
+
+\section{Archive replay and evidence-response controls}\label{app:archived}
+The archive contains 4,224 Bayesian-task predictions and 448 transformed
+math-task predictions, including both selectors and evidence-only auditor
+queries. We verify archive IDs, prompt hashes, output dimensions, candidate
+orders and posterior labels. We then recompute normalized candidate and
+report probabilities from the logits. The five forecast values are
+$\{0,0.25,0.5,0.75,1\}$, each with two style options for the selectors.
+Auditor-only queries use the five forecast options and omit stance.
+Their mean report across two orders is passed through the frozen logistic
+calibrator. The raw and calibrated auditors use the same target temperature
+$T_E=0.03$. The training-mean audit uses the mean Bayesian posterior from
+the 256 training contexts as its center. The oracle-grid reference uses the
+exact posterior as its center at that same temperature.
+
+For reports with mean $\bar q$, report regret decomposes as
+\[
+ \mathbb E[(Q-p)^2]=(\bar q-p)^2+\operatorname{Var}(Q).
+\]
+We report both terms per prompt and preserve paired observations when
+resampling evidence contexts. A more concentrated predictor can improve
+report regret even when it supplies little evidence-specific information.
+For updates we first take a matched before/after difference
+$\Delta \bar q$ within each stance. We then average
+$|\Delta\bar q|$ or $|\Delta\bar q-\Delta p|$ across stances within each
+context. Taking the absolute value after averaging stances would answer
+a different question and can hide opposing updates. The zero-update
+baseline incurs $|\Delta p|$. We use 5,000 percentile bootstrap replicates.
+The frozen-model replays share the same fitted auditor. We report its
+performance once. A second bootstrap independently resamples the
+training and validation contexts, repeats selection from the original
+regularization grid, and uses paired resamples of test contexts.
+The constant comparator is recentered on the resampled training mean.
+External-task labels are used only for evaluation.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Stance sensitivity and evidence responsiveness on 128
+Bayesian test contexts. The stance gap is the absolute difference between
+mean reports at 0.1 and 0.9 before new evidence. The error difference
+compares mean absolute update error with zero update. Intervals use
+paired resampling of contexts and a fixed calibrator. The exact
+posterior changes by 0.29313 on average in absolute value.}
+\label{tab:updatereplay}
+\input{table_update_replay.tex}
+\end{table}
 
 \end{document}

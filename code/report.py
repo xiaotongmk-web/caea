@@ -45,6 +45,8 @@ def main():
     # experiment registry or a preregistration.
     inventory=[]
     for p in sorted((ROOT/'results').glob('*')):
+        if p.name == 'evidence_replay_per_prompt.csv':
+            continue
         if p.is_file():inventory.append(dict(path=str(p.relative_to(ROOT)),bytes=p.stat().st_size,
                  sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
     (ROOT/'results_inventory.json').write_text(json.dumps(inventory,indent=2))

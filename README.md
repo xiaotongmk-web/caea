@@ -1,14 +1,13 @@
-# CAEA: Auditing and Repairing Preference-Induced Belief Feedback
+# CAEA — When Pooled Evaluations Hide Belief Feedback
 
-**Xiaotong Zhang - China University of Petroleum (East China)**
+**Xiaotong Zhang**
 
-[Manuscript](paper/CAEA.pdf) | [Repository](https://github.com/xiaotongmk-web/caea) | [Citation](CITATION.cff) | [Recorded data](results/)
+[Public manuscript](paper/CAEA.pdf) | [Citation](CITATION.cff) | [Recorded data](results/) | [Changelog](CHANGELOG.md)
 
-This unpublished theory and controlled computational study has no assigned arXiv
-identifier or DOI. The original neural pilots use frozen backbones and trained candidate
-heads. Version 0.3 adds 4,672 unique fresh study requests on three frozen
-official Q4_K_M checkpoints up to 7.61B parameters, with a separately
-calibrated common auditor and an exploratory external correctness task. There is no full-model post-training, free-text evaluation or human study.
+The current public revision adds an exact sampled-kernel result, a
+two-sided finite-audit decision rule, and a reanalysis of archived model
+outputs against stronger controls. The manuscript is an unpublished
+research preprint.
 
 ## Main finding
 
@@ -24,6 +23,38 @@ conditional preferences, cost and failure cases, rather than independent
 discovery of an evidence target.
 
 ![Controlled audit observability example](figures/audit_concept.png)
+
+## What changed in the current revision
+
+- The binary sampled process has an exact one-step Wasserstein coefficient.
+  Two stable deterministic equilibria can coexist with a unique stationary
+  distribution for the sampled process.
+- The finite-grid audit can certify contraction given a curvature bound,
+  rule it out given a sufficiently steep measured secant, or return an
+  inconclusive result.
+- On the archived Bayesian task, the calibrated repair has forecast regret
+  **0.08288**, versus **0.07142** for always reporting 0.5. The paired
+  difference remains positive under 750 resamples that refit the calibrator.
+  Full repair retains roughly **3%** of the analytic update magnitude.
+  It has no clear update-error advantage over zero update.
+- The paired signed stance contrast points in opposite directions for
+  Qwen2.5-1.5B and Qwen2.5-7B. Report the signed and absolute contrasts
+  separately. These are measurements on two audited stances, not global
+  stability estimates.
+
+## Recent reference methods and benchmarks
+
+| Work | Relevant comparison |
+| --- | --- |
+| [How RLHF Amplifies Sycophancy](https://proceedings.mlr.press/v306/shapira26a.html) | A formal amplification mechanism and a minimum-KL correction. |
+| [BASIL](https://arxiv.org/abs/2508.16846) | Bayesian diagnostics and BayesSFT/BayesDPO for evidence-based updating. |
+| [Sycophancy Suppression Can Impair Rational Updating](https://aclanthology.org/2026.findings-emnlp.1208/) | Separates unsupported yielding from rational updating. |
+| [SycoBench-600](https://aclanthology.org/2026.findings-acl.1759/) and [Big-Big-SycoBench](https://arxiv.org/abs/2610.15634) | Tests correction selectivity under pressure or valid and invalid arguments. |
+| [BayesBench](https://arxiv.org/abs/2606.30850) | Tracks belief trajectories as evidence accumulates across turns. |
+
+These works motivate comparisons on matched tasks. The recorded results
+below use the repository's controlled tasks. They provide no head-to-head
+ranking on these external benchmarks.
 
 ## Small example
 
@@ -44,12 +75,15 @@ deterministic trajectories; it does not measure human behavior.
 
 ```bash
 python code/verify_results.py
+python code/evidence_replay.py
 python code/review_audit.py
 python code/verify_scale.py
 python code/verify_external.py
 ```
 
-The first checks study consistency. The second independently replays archived
+The first checks study consistency. The second replays the 4,672 archived Q4
+records and regenerates the paired stance and update results, calibration-refit
+intervals, and the manuscript table. The third replays archived
 frozen-model hidden states/logits and fitted heads, checks repair identities and
 empty-support behavior, and reconstructs paired bootstrap intervals over 24
 evidence clusters and five label seeds. It does not perform fresh backbone
@@ -89,7 +123,7 @@ folder and invokes pdflatex/bibtex.
 | Frozen-neural pilot | 40/12/24 train/validation/test contexts, 152 prompts/model, 5 label seeds |
 | Transfer control | 48 permuted prompts/model; no robust DPO gain established |
 
-## Expanded fresh-inference study (v0.3)
+## Archived multi-model study (v0.3 data)
 
 | Component | Actual completed scope |
 | --- | --- |
@@ -102,7 +136,7 @@ folder and invokes pdflatex/bibtex.
 | External fresh requests | 64 common-auditor + 128 selector per backbone = 448 |
 | Independent test units | 128 Bayesian contexts plus 32 source questions; prompts/model repeats add no units |
 | Comparisons | All fourteen methods and all protocol coefficients |
-| Uncertainty | 5,000 paired context resamples; 500 auditor-refit train/validation/test resamples |
+| Uncertainty | 5,000 paired context resamples; 500 historical auditor-refit resamples and 750 for the current reanalysis |
 
 The locally fixed execution protocol precedes study inference but is not an
 external preregistration. Later controls and the external extension are
@@ -128,6 +162,7 @@ python code/scale_study.py analyse
 python code/external_study.py analyse
 python code/auditor_refit_bootstrap.py --replicates 500
 python code/scale_report.py
+python code/evidence_replay.py
 python code/verify_scale.py
 python code/verify_external.py
 ```
@@ -220,11 +255,10 @@ fingerprints and describe that as newly verified inference.
 ## Build and citation
 
 `python code/build_paper.py` requires pdflatex and bibtex.
-`python code/build_submission.py --compile` rebuilds the anonymous manuscript
-and supplement from the public text and stable official-style base. The official-style
-anonymous manuscript and proofs are in `submission/`; build main before appendix
-because the latter reads its cross-reference file. Keep public author details,
-citation files and this README out of the anonymous supplementary archive.
+`python code/build_submission.py --compile` compiles the historical IJCAI
+draft already in the repository. The current public source and PDF are in
+[paper/](paper/). The historical draft is kept for provenance in
+[submission/](submission/).
 
 Original code is MIT licensed. That code license does not cover the manuscript
 or model weights. TMLR style licensing is in `paper/THIRD_PARTY_NOTICE.md`; the
