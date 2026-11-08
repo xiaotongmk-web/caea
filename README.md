@@ -56,6 +56,10 @@ These works motivate comparisons on matched tasks. The recorded results
 below use the repository's controlled tasks. They provide no head-to-head
 ranking on these external benchmarks.
 
+## Offline experiment tools
+
+Use the [offline experiment entry point](experiments/README.md) to register local assets and score paired predictions. The [protocol proposal](docs/NEXT_EXPERIMENTS_zh.md) describes the next evidence and stance controls.
+
 ## Small example
 
 Use Python 3.12 and the recorded core versions:
