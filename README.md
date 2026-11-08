@@ -56,6 +56,10 @@ These works motivate comparisons on matched tasks. The recorded results
 below use the repository's controlled tasks. They provide no head-to-head
 ranking on these external benchmarks.
 
+## Research tools
+
+See the [CPU replay and evidence-grid tools](docs/CPU_REPRODUCIBILITY_AND_NEXT_STAGE.md) for an isolated replay command and a prompt design generator.
+
 ## Small example
 
 Use Python 3.12 and the recorded core versions:
