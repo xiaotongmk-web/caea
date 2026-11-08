@@ -36,6 +36,37 @@ def main():
         groups.setdefault(key,set()).add(r['split'])
     assert all(len(g)==1 for g in groups.values())
     assert len(prompts)==152
-    print('PASS: completed runs, finite-audit certificates, exact audit comparison, stochastic noise floor, independent optimization, disjoint neural evidence splits, honest neural scope')
+    from scipy.special import expit
+    from scipy.stats import wasserstein_distance
+
+    a, repair, eta = 4., 0., 1.
+    u, v = .49999, .50001
+    probability = (1 - repair) * expit(a * (2 * np.array([u, v]) - 1)) + repair / 2
+    supports = [(1 - eta) * s + eta * np.array([0., 1.]) for s in [u, v]]
+    distance = wasserstein_distance(*supports,
+        u_weights=[1 - probability[0], probability[0]],
+        v_weights=[1 - probability[1], probability[1]])
+    assert abs(distance / (v - u) - a / 2) < 1e-7
+    p0, p1 = expit(a * (2 * np.array([0., 1.]) - 1))
+    transition = np.array([[1 - p0, p0], [1 - p1, p1]])
+    assert np.all(transition > 0)
+    assert np.allclose(np.array([.5, .5]) @ transition, [.5, .5])
+
+    audit = read('audit_decision_demo.csv')
+    assert len(audit) == 5
+    for row in audit:
+        outputs = [int(row[key]) for key in ('certify', 'refute', 'inconclusive')]
+        true = float(row['true_sensitivity'])
+        assert sum(outputs) == int(row['replicates'])
+        assert not (true >= 1 and outputs[0])
+        assert not (true <= 1 and outputs[1])
+
+    refit = read('calibration_refit_intervals.csv')
+    assert len(refit) == 5 and all(int(r['replicates']) == 750 for r in refit)
+    point = next(r for r in refit if r['dataset'] == 'scale' and r['metric'] == 'risk_minus_point50')
+    assert float(point['ci_low']) > 0
+    response = next(r for r in refit if r['metric'] == 'update_mae_minus_zero')
+    assert float(response['ci_low']) < 0 < float(response['ci_high'])
+    print('PASS: completed runs, finite-audit certificates, exact audit comparison, stochastic noise floor, independent optimization, disjoint neural evidence splits, honest neural scope, two-sided audits, and replay checks')
 
 if __name__=='__main__':main()

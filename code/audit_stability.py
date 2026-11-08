@@ -16,7 +16,36 @@ def bump(s,center,width):
     out[inside]=np.exp(1-1/(1-z[inside]**2))
     return out
 
+def decision_demo():
+    """Illustrate when the same audit can certify or refute contraction."""
+    points, trials, replicates, delta = 11, 20_000, 500, .05
+    grid = np.linspace(0, 1, points)
+    h = grid[1] - grid[0]
+    error = 2 * np.sqrt(np.log(2 * points / delta) / (2 * trials)) / h
+    rng = np.random.default_rng(202611072)
+    rows = []
+    for a, repair in [(1., 0.), (2., 0.), (4., 0.), (4., .5), (4., .75)]:
+        truth = (1 - repair) * a / 2
+        curvature = 2 * a ** 2 / (3 * np.sqrt(3))
+        means = rng.binomial(trials, expit(a * (2 * grid - 1)),
+                             size=(replicates, points)) / trials
+        slopes = np.diff(means, axis=1) / h
+        upper = (1 - repair) * (np.max(abs(slopes), axis=1) + error + curvature * h / 2)
+        lower = (1 - repair) * (np.max(slopes, axis=1) - error)
+        certify = upper < 1
+        refute = lower > 1
+        assert not np.any(certify & refute)
+        assert not np.any(certify & (truth >= 1))
+        assert not np.any(refute & (truth <= 1))
+        rows.append(dict(a=a, repair=repair, true_sensitivity=truth, grid_points=points,
+                         trials_per_point=trials, replicates=replicates,
+                         certify=int(certify.sum()), refute=int(refute.sum()),
+                         inconclusive=int((~certify & ~refute).sum())))
+    write_csv(ROOT / 'results/audit_decision_demo.csv', rows)
+
+
 def main():
+    decision_demo()
     a=4.;H=2*a*a/(3*np.sqrt(3));Ltrue=a/2;delta=.05;gamma=.1
     rows=[];rng=np.random.default_rng(9217)
     for budget in [1024,4096,16384,65536,262144]:

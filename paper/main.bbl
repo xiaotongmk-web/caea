@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{23}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -10,6 +10,17 @@ Katherine Atwell, Pedram Heydari, Anthony Sicilia, and Malihe Alikhani.
 \newblock {BASIL}: Bayesian assessment of sycophancy in {LLMs}, 2026.
 \newblock URL \url{https://arxiv.org/abs/2508.16846v6}.
 \newblock arXiv:2508.16846, version 6.
+
+\bibitem[Ballon et~al.(2026)Ballon, Vanhoyweghen, Kim, Carlon, Delcon, Mobini,
+  Holst, Van~de Voorde, Vanleke, Louis, Verbruggen, Verbeken, Algaba, and
+  Ginis]{ballon2026big}
+Marthe Ballon, Arne Vanhoyweghen, Seorin Kim, Francesca Carlon, Lynn Delcon,
+  Melika Mobini, Vincent Holst, Lukas Van~de Voorde, Tibo Vanleke, Mathieu
+  Louis, Bert Verbruggen, Brecht~F. Verbeken, Andres Algaba, and Vincent Ginis.
+\newblock {Big-Big-SycoBench}: A benchmark to detect sycophancy through model
+  responses to valid vs.\ invalid arguments, 2026.
+\newblock URL \url{https://arxiv.org/abs/2610.15634}.
+\newblock arXiv:2610.15634.
 
 \bibitem[Cobbe et~al.(2021)Cobbe, Kosaraju, Bavarian, Chen, Jun, Kaiser,
   Plappert, Tworek, Hilton, Nakano, Hesse, and Schulman]{cobbe2021}
@@ -136,13 +147,28 @@ Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher~D.
   volume~36, 2023.
 \newblock URL \url{https://arxiv.org/abs/2305.18290}.
 
-\bibitem[Shapira et~al.(2026)Shapira, Benade, and Procaccia]{shapira2026}
+\bibitem[Samanta et~al.(2026)]{samanta2026bayesbench}
+Ankur Samanta et~al.
+\newblock {BayesBench}: Evaluating {LLM} belief trajectories under multi-turn
+  evidence accumulation, 2026.
+\newblock URL \url{https://arxiv.org/abs/2606.30850}.
+\newblock arXiv:2606.30850.
+
+\bibitem[Shapira et~al.(2026{\natexlab{a}})Shapira, Benade, and
+  Procaccia]{shapira2026}
 Itai Shapira, Gerdus Benade, and Ariel~D. Procaccia.
 \newblock How {RLHF} amplifies sycophancy.
 \newblock In \emph{Proceedings of the 43rd International Conference on Machine
   Learning}, volume 306 of \emph{Proceedings of Machine Learning Research},
-  pp.\  110417--110441, 2026.
+  pp.\  110417--110441, 2026{\natexlab{a}}.
 \newblock URL \url{https://proceedings.mlr.press/v306/shapira26a.html}.
+
+\bibitem[Shapira et~al.(2026{\natexlab{b}})Shapira, Cheng, and
+  Orgad]{shapiraUpdating2026}
+Itai Shapira, Myra Cheng, and Hadas Orgad.
+\newblock Is sycophancy a form of in-context updating?, 2026{\natexlab{b}}.
+\newblock URL \url{https://arxiv.org/abs/2610.28325}.
+\newblock arXiv:2610.28325.
 
 \bibitem[Sharma et~al.(2024)Sharma, Tong, Korbak, Duvenaud, Askell, Bowman,
   Cheng, Durmus, Hatfield-Dodds, Johnston, Kravec, Maxwell, McCandlish,
@@ -154,5 +180,13 @@ Mrinank Sharma, Meg Tong, Tomasz Korbak, David Duvenaud, Amanda Askell,
 \newblock Towards understanding sycophancy in language models.
 \newblock In \emph{International Conference on Learning Representations}, 2024.
 \newblock URL \url{https://arxiv.org/abs/2310.13548}.
+
+\bibitem[Sinha(2026)]{sinha2026sycobench}
+Debu Sinha.
+\newblock {SycoBench-600}: Measuring sycophancy and correction selectivity in
+  {LLM} assistants.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  ACL 2026}, pp.\  35278--35284, 2026.
+\newblock URL \url{https://aclanthology.org/2026.findings-acl.1759/}.
 
 \end{thebibliography}
