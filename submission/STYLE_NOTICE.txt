@@ -1,1 +1,0 @@
-ijcai27.sty and named.bst are unmodified files from the official IJCAI 2027 author kit, retrieved 2026-11-02. Source: https://ijcai.org/sites/default/files/Guidelines/FormattingGuidelines-IJCAI-27.zip

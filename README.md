@@ -123,7 +123,7 @@ folder and invokes pdflatex/bibtex.
 | Frozen-neural pilot | 40/12/24 train/validation/test contexts, 152 prompts/model, 5 label seeds |
 | Transfer control | 48 permuted prompts/model; no robust DPO gain established |
 
-## Archived multi-model study (v0.3 data)
+## Recorded multi-model study
 
 | Component | Actual completed scope |
 | --- | --- |
@@ -254,14 +254,11 @@ fingerprints and describe that as newly verified inference.
 
 ## Build and citation
 
-`python code/build_paper.py` requires pdflatex and bibtex.
-`python code/build_submission.py --compile` compiles the historical IJCAI
-draft already in the repository. The current public source and PDF are in
-[paper/](paper/). The historical draft is kept for provenance in
-[submission/](submission/).
+Run `python code/build_paper.py` with pdflatex and BibTeX to build the
+[public manuscript](paper/CAEA.pdf) from the source in [paper/](paper/).
+Use [CITATION.cff](CITATION.cff) for citation metadata.
 
-Original code is MIT licensed. That code license does not cover the manuscript
-or model weights. TMLR style licensing is in `paper/THIRD_PARTY_NOTICE.md`; the
-IJCAI 2027 style files are unchanged official files. The public paper reports
-substantial generative-AI assistance in formalization, proofs, experiments,
-analysis and writing; the named human author remains responsible for the work.
+The original code is MIT licensed. The manuscript, third-party style files,
+and model weights have separate terms. See
+[the style notice](paper/THIRD_PARTY_NOTICE.md) for the bundled TMLR files.
+The public paper documents generative-AI assistance and author responsibility.
